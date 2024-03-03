@@ -1,0 +1,67 @@
+{
+    "name": "iteks/laravel-enum",
+    "description": "A package to extend enum functionalities in Laravel projects.",
+    "type": "library",
+    "keywords": ["laravel","php", "enum", "trait", "collection", "array", "data", "serialize"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jeramy Hing",
+            "email": "iteks@msn.com"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "laravel/framework": "^10.46"
+    },
+    "autoload": {
+        "psr-4": {
+            "Iteks\\Attributes\\": "src/Attributes/",
+            "Iteks\\Support\\": "src/",
+            "Iteks\\Traits\\": "src/Traits/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "pint:lint": "pint -v --test",
+        "pint:fix": "pint -v",
+        "phpstan": [
+            "phpstan analyse --ansi"
+        ],
+        "test": "pest --colors=always",
+        "test:all": [
+            "@pint:lint",
+            "@phpstan",
+            "@test"
+        ]
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Iteks\\Support\\EnumServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require-dev": {
+        "laravel/pint": "^1.14",
+        "pestphp/pest": "^2.34",
+        "pestphp/pest-plugin-arch": "^2.7",
+        "phpstan/phpstan": "^1.10",
+        "symfony/var-dumper": "^6.4"
+    }
+}

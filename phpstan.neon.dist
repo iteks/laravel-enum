@@ -1,0 +1,25 @@
+#includes:
+#    - vendor/larastan/larastan/extension.neon
+
+parameters:
+
+    paths:
+        - src/
+
+    excludePaths:
+    #    - ./*/*/FileToBeExcluded.php
+        - tests/
+        - vendor/
+
+    # Level 9 is the highest level. See: https://phpstan.org/user-guide/rule-levels
+    level: 8
+
+    ignoreErrors:
+    #    - '#PHPDoc tag @var#'
+    #    These arre resolved by setting `checkMissingIterableValueType: false` below.
+    #    - '#Method [a-zA-Z0-9_\\:()]+ return type has no value type specified in iterable type array#'
+    #    - '#Method [a-zA-Z0-9_\\:()]+ has parameter \$[a-zA-Z0-9_]+ with no value type specified in iterable type array#'
+        - '#Call to an undefined static method Illuminate\\Support\\Str\:\:splitConstantCase\(\)#'
+        - '#Call to an undefined static method Illuminate\\Support\\Str\:\:splitEnumCase\(\)#'
+
+    checkMissingIterableValueType: false
