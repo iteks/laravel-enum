@@ -16,7 +16,15 @@ class BackedEnumService
      */
     public static function asSelectArray(string $enum): array
     {
-        return array_map(function ($case): array {
+        return array_map(function ($case) use ($enum): array {
+            // If the enum class has a label and id method, use them to get the text and value.
+            if (method_exists($enum, 'label') && method_exists($enum, 'id')) {
+                return [
+                    'text' => HasAttributesService::label($case) ?? self::toLabel($case),
+                    'value' => HasAttributesService::id($case) ?? $case->value,
+                ];
+            }
+
             return [
                 'text' => self::toLabel($case),
                 'value' => $case->value,

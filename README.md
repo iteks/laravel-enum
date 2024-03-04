@@ -64,9 +64,7 @@ composer require iteks/laravel-enum
 
 The **Laravel Enum** methods are designed for [PHP 8 Backed Enumeration](https://www.php.net/manual/en/language.enumerations.backed.php) classes.
 
-**Laravel Enum** helper and trait methods extend an existing backed enum class for more versatile enum handling. Additionally, **Laravel Enum** offers a fluent way to add and manage attributes on backed enum cases. This package comes with four available attributes to readily assign to your enum cases: **Description**, **Id**, **Label**, and **Metadata**. The ExampleEnum class below demonstrates how you can apply these attributes to you enums.
-
-[top](#usage)
+**Laravel Enum** helper and trait methods extend an existing backed enum class for more versatile enum handling. Additionally, **Laravel Enum** offers a fluent way to add and manage attributes on backed enum cases. This package comes with four available attributes to readily assign to your enum cases: **Description**, **Id**, **Label**, and **Metadata**. The ExampleEnum class below demonstrates how you can apply these attributes to you enums. You may pick and choose which attributes you wish to take advantage of.
 
 ```php
 use Iteks\Attributes\Description;
@@ -101,13 +99,25 @@ enum ExampleEnum: int
 }
 ```
 
+[top](#usage)
+
 ## Enum Helpers (BackedEnum)
+
+First, import the helper class:
+
+```php
+use Iteks\Support\Facades\Enum;
+```
+
+_Note: This group of helpers **does NOT require any trait to be applied** to the target enum class. You may immediately use the the following methods:_
+
+[top](#usage)
 
 ### Enum::asSelectArray()
 
 Get a backed enum class as an array to populate a select element. The array will consist of a `text` key column containing values of the case name in display format, and a `value` keys column containing values using the original simpler values.
 
-[top](#usage)
+_Note: This method will first check for **Label** and **Id** attributes applied to the target enum class. If they are present, the method will prioritize those values. If not present, the method will return a mutated Headline value from the case name._
 
 ```php
 Enum::asSelectArray(ExampleEnum::class);
@@ -130,11 +140,11 @@ array:3 [▼
 ]
 ```
 
+[top](#usage)
+
 ### Enum::toLabel()
 
 Create a label from the case name.
-
-[top](#usage)
 
 ```php
 Enum::toLabel(ExampleEnum::FirstExample);
@@ -144,11 +154,11 @@ Enum::toLabel(ExampleEnum::FirstExample);
 "First Example"
 ```
 
+[top](#usage)
+
 ### Enum::toLabels()
 
 Create and compile an array of labels from the case names.
-
-[top](#usage)
 
 ```php
 Enum::toLabels(ExampleEnum::class);
@@ -162,13 +172,25 @@ array:3 [▼
 ]
 ```
 
+[top](#usage)
+
 ## Enum Helpers (HasAttributes)
+
+First, ensure that the target enum class has the `HasAttributes` trait applied, as shown in the [ExampleEnum class](#enumexample-class) above.
+
+Then, import the helper class:
+
+```php
+use Iteks\Support\Facades\Enum;
+```
+
+You may then use the following methods:
+
+[top](#usage)
 
 ### Enum::attributes()
 
 Retrieve all of the attributes for all cases.
-
-[top](#usage)
 
 ```php
 Enum::attributes(ExampleEnum::FirstExample);
@@ -252,11 +274,11 @@ array:3 [▼
 ]
 ```
 
+[top](#usage)
+
 ### Enum::description()
 
 Retrieve the description attribute.
-
-[top](#usage)
 
 ```php
 Enum::description(ExampleEnum::FirstExample);
@@ -266,11 +288,11 @@ Enum::description(ExampleEnum::FirstExample);
 "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
 ```
 
+[top](#usage)
+
 ### Enum::descriptions()
 
 Retrieve the description attribute for all cases.
-
-[top](#usage)
 
 ```php
 Enum::descriptions(ExampleEnum::class);
@@ -284,11 +306,11 @@ array:3 [▼
 ]
 ```
 
+[top](#usage)
+
 ### Enum::id()
 
 Retrieve the id attribute.
-
-[top](#usage)
 
 ```php
 Enum::id(ExampleEnum::FirstExample);
@@ -298,11 +320,11 @@ Enum::id(ExampleEnum::FirstExample);
 0
 ```
 
+[top](#usage)
+
 ### Enum::ids()
 
 Retrieve the id attribute for all cases.
-
-[top](#usage)
 
 ```php
 Enum::ids(ExampleEnum::class);
@@ -316,11 +338,11 @@ array:3 [▼
 ]
 ```
 
+[top](#usage)
+
 ### Enum::label()
 
 Retrieve the label attribute.
-
-[top](#usage)
 
 ```php
 Enum::label(ExampleEnum::FirstExample);
@@ -330,11 +352,11 @@ Enum::label(ExampleEnum::FirstExample);
 "First-Example"
 ```
 
+[top](#usage)
+
 ### Enum::labels()
 
 Retrieve the label attribute for all cases.
-
-[top](#usage)
 
 ```php
 Enum::labels(ExampleEnum::class);
@@ -348,11 +370,11 @@ array:3 [▼
 ]
 ```
 
+[top](#usage)
+
 ### Enum::metadata()
 
 Retrieve the metadata attribute.
-
-[top](#usage)
 
 ```php
 Enum::metadata(ExampleEnum::FirstExample);
@@ -364,11 +386,11 @@ array:1 [▼
 ]
 ```
 
+[top](#usage)
+
 ### Enum::metadatum()
 
 Retrieve the metadata attribute for all cases.
-
-[top](#usage)
 
 ```php
 Enum::metadatum(ExampleEnum::class);
@@ -384,13 +406,21 @@ array:3 [▼
 ]
 ```
 
+[top](#usage)
+
 ## Enum Traits (BackedEnum)
+
+First, ensure that the target enum class has the `BackedEnum` trait applied, as shown in the [ExampleEnum class](#enumexample-class) above.
+
+Then, you may then use the following methods:
+
+[top](#usage)
 
 ### asSelectArray()
 
 Get a backed enum class as an array to populate a select element. The array will consist of a `text` key column containing values of the case name in display format, and a `value` keys column containing values using the original simpler values.
 
-[top](#usage)
+_Note: This method will first check for **Label** and **Id** attributes applied to the target enum class. If they are present, the method will prioritize those values. If not present, the method will return a mutated Headline value from the case name._
 
 ```php
 ExampleEnum::asSelectArray();
@@ -413,11 +443,11 @@ array:3 [▼
 ]
 ```
 
+[top](#usage)
+
 ### fromName()
 
 Maps a scalar to an enum instance.
-
-[top](#usage)
 
 ```php
 ExampleEnum::fromName('FirstExample');
@@ -430,11 +460,11 @@ App\Enums\ExampleEnum {#297 ▼
 }
 ```
 
+[top](#usage)
+
 ### name()
 
 Retrieve the case name for the given simpler value.
-
-[top](#usage)
 
 ```php
 ExampleEnum::name(1);
@@ -444,11 +474,11 @@ ExampleEnum::name(1);
 "FirstExample"
 ```
 
+[top](#usage)
+
 ### names()
 
 Retrieve an array containing all of the case names.
-
-[top](#usage)
 
 ```php
 ExampleEnum::names();
@@ -462,11 +492,11 @@ array:3 [▼
 ]
 ```
 
+[top](#usage)
+
 ### toLabel()
 
 Create a label from the case name.
-
-[top](#usage)
 
 ```php
 ExampleEnum::toLabel(1);
@@ -476,11 +506,11 @@ ExampleEnum::toLabel(1);
 "First Example"
 ```
 
+[top](#usage)
+
 ### toLabels()
 
 Create and compile an array of labels from the case names.
-
-[top](#usage)
 
 ```php
 ExampleEnum::toLabels();
@@ -494,11 +524,11 @@ array:3 [▼
 ]
 ```
 
+[top](#usage)
+
 ### tryFromName()
 
 Maps a scalar to an enum instance or null.
-
-[top](#usage)
 
 ```php
 ExampleEnum::tryFromName('FirstExample');
@@ -511,11 +541,11 @@ App\Enums\ExampleEnum {#297 ▼
 }
 ```
 
+[top](#usage)
+
 ### value()
 
 Retrieve the simpler value for the given case name.
-
-[top](#usage)
 
 ```php
 ExampleEnum::value('FirstExample');
@@ -525,11 +555,11 @@ ExampleEnum::value('FirstExample');
 1
 ```
 
+[top](#usage)
+
 ### values()
 
 Retrieve an array containing all of the simpler values.
-
-[top](#usage)
 
 ```php
 ExampleEnum::values();
@@ -543,13 +573,19 @@ array:3 [▼
 ]
 ```
 
+[top](#usage)
+
 ## Enum Traits (HasAttributes)
+
+First, ensure that the target enum class has the `HasAttributes` trait applied, as shown in the [ExampleEnum class](#enumexample-class) above.
+
+Then, you may then use the following methods:
+
+[top](#usage)
 
 ### attributes()
 
 Retrieve all of the attributes for all cases.
-
-[top](#usage)
 
 ```php
 ExampleEnum::attributes('FirstExample');
@@ -633,11 +669,11 @@ array:3 [▼
 ]
 ```
 
+[top](#usage)
+
 ### description()
 
 Retrieve the description attribute.
-
-[top](#usage)
 
 ```php
 ExampleEnum::description('FirstExample');
@@ -647,11 +683,11 @@ ExampleEnum::description('FirstExample');
 "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
 ```
 
+[top](#usage)
+
 ### descriptions()
 
 Retrieve the description attribute for all cases.
-
-[top](#usage)
 
 ```php
 ExampleEnum::descriptions();
@@ -665,11 +701,11 @@ array:3 [▼
 ]
 ```
 
+[top](#usage)
+
 ### id()
 
 Retrieve the id attribute.
-
-[top](#usage)
 
 ```php
 ExampleEnum::id('FirstExample');
@@ -679,11 +715,11 @@ ExampleEnum::id('FirstExample');
 0
 ```
 
+[top](#usage)
+
 ### ids()
 
 Retrieve the id attribute for all cases.
-
-[top](#usage)
 
 ```php
 ExampleEnum::ids();
@@ -697,11 +733,11 @@ array:3 [▼
 ]
 ```
 
+[top](#usage)
+
 ### label()
 
 Retrieve the label attribute.
-
-[top](#usage)
 
 ```php
 ExampleEnum::label('FirstExample');
@@ -711,11 +747,11 @@ ExampleEnum::label('FirstExample');
 "First-Example"
 ```
 
+[top](#usage)
+
 ### labels()
 
 Retrieve the label attribute for all cases.
-
-[top](#usage)
 
 ```php
 ExampleEnum::labels();
@@ -729,11 +765,11 @@ array:3 [▼
 ]
 ```
 
+[top](#usage)
+
 ### metadata()
 
 Retrieve the metadata attribute.
-
-[top](#usage)
 
 ```php
 ExampleEnum::metadata('FirstExample');
@@ -745,11 +781,11 @@ array:1 [▼
 ]
 ```
 
+[top](#usage)
+
 ### metadatum()
 
 Retrieve the metadata attribute for all cases.
-
-[top](#usage)
 
 ```php
 ExampleEnum::metadatum();
@@ -765,13 +801,17 @@ array:3 [▼
 ]
 ```
 
+[top](#usage)
+
 ## String Helper Macros
+
+These helperas are booted when installing the package and are immediately available for use.
+
+[top](#usage)
 
 ### Str::splitConstantCase()
 
 Splits a "CONSTANT_CASE" string into words separated by whitespace.
-
-[top](#usage)
 
 ```php
 Str::splitConstantCase('FIRST_EXAMPLE');
@@ -781,11 +821,11 @@ Str::splitConstantCase('FIRST_EXAMPLE');
 "FIRST EXAMPLE"
 ```
 
+[top](#usage)
+
 ### Str::splitEnumCase()
 
 Splits a "EnumCase" string into words separated by whitespace.
-
-[top](#usage)
 
 ```php
 Str::splitEnumCase('FirstExample');
@@ -794,3 +834,5 @@ Str::splitEnumCase('FirstExample');
 ```sh
 "First Example"
 ```
+
+[top](#usage)

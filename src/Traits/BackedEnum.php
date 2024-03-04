@@ -19,10 +19,18 @@ trait BackedEnum
     {
         $enumClass = static::class;
 
-        return array_map(function ($case): array {
+        return array_map(function ($case) use ($enumClass): array {
+            // If the enum class has a label and id method, use them to get the text and value.
+            if (method_exists($enumClass, 'label') && method_exists($enumClass, 'id')) {
+                return [
+                    'text' => self::label($case->name) ?? self::toLabel($case->value),
+                    'value' => self::id($case->name) ?? $case->value,
+                ];
+            }
+
             return [
-                'text' => self::label($case->name) ?? self::toLabel($case->value),
-                'value' => self::id($case->name) ?? $case->value,
+                'text' => self::toLabel($case->value),
+                'value' => $case->value,
             ];
         }, $enumClass::cases());
     }
