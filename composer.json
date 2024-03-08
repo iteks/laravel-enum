@@ -2,7 +2,7 @@
     "name": "iteks/laravel-enum",
     "description": "A comprehensive Laravel package providing enhanced enum functionalities, including attribute handling, select array conversions, and fluent facade interactions for robust enum management in Laravel applications.",
     "type": "library",
-    "keywords": ["laravel","php", "enum", "trait", "collection", "array", "data", "serialize"],
+    "keywords": ["laravel","php", "enum", "attribute", "trait", "helper", "collection", "array", "string", "data", "serialize"],
     "license": "MIT",
     "authors": [
         {
