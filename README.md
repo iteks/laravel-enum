@@ -6,13 +6,13 @@
 <a href="https://packagist.org/packages/iteks/laravel-enum"><img src="https://img.shields.io/packagist/l/iteks/laravel-enum" alt="License"></a>
 </p>
 
-The **Laravel Enum** package enriches Laravel's enum support, integrating advanced features like attribute handling, select array transformation, and facade access for streamlined enum operations. Designed for Laravel applications, it offers a suite of utilities for both backed enums and attribute-enhanced enums, including descriptive annotations, ID management, label generation, and metadata association. This package streamlines working with enums in Laravel by providing intuitive, fluent interfaces for common tasks, enhancing enum usability in forms, API responses, and more. Whether you're defining select options, querying enum attributes, or integrating enums tightly with Laravel features, **Laravel Enum** simplifies these processes, making enum management in Laravel applications both powerful and efficient. Offered by iteks, Developed by <a href="https://github.com/jeramyhing">jeramyhing</a>.
+The **Laravel Enum** package enriches Laravel's enum support, integrating advanced features like attribute handling, select array transformation, and facade access for streamlined enum operations. Designed for Laravel applications, it offers a suite of utilities for both backed enums and attribute-enhanced enums, including descriptive annotations, ID management, label generation, and metadata association. This package streamlines working with enums in Laravel by providing intuitive, fluent interfaces for common tasks, enhancing enum usability in forms, API responses, and more. Whether you're defining select options, querying enum attributes, or integrating enums tightly with Laravel features, **Laravel Enum** simplifies these processes, making enum management in Laravel applications both powerful and efficient. Offered by <a href="https://github.com/iteks/">iteks</a>, Developed by <a href="https://github.com/jeramyhing/">jeramyhing</a>.
 
 ## Get Started
 
-> **Requires [PHP 8.1+](https://php.net/releases/)**
+> **Requires <a href="https://php.net/releases/" target="_blank">PHP 8.1+</a>**
 
-Install **Laravel Enum** via the [Composer](https://getcomposer.org/) package manager:
+Install **Laravel Enum** via the <a href="https://getcomposer.org/" target="_blank">Composer</a> package manager:
 
 ```bash
 composer require iteks/laravel-enum
@@ -62,9 +62,9 @@ composer require iteks/laravel-enum
 
 ## EnumExample class
 
-The **Laravel Enum** methods are designed for [PHP 8 Backed Enumeration](https://www.php.net/manual/en/language.enumerations.backed.php) classes.
+The **Laravel Enum** methods are designed for <a href="https://www.php.net/manual/en/language.enumerations.backed.php" target="_blank">PHP 8 Backed Enumeration</a> classes.
 
-**Laravel Enum** helper and trait methods extend an existing backed enum class for more versatile enum handling. Additionally, **Laravel Enum** offers a fluent way to add and manage attributes on backed enum cases. This package comes with four available attributes to readily assign to your enum cases: **Description**, **Id**, **Label**, and **Metadata**. The ExampleEnum class below demonstrates how you can apply these attributes to you enums. You may pick and choose which attributes you wish to take advantage of.
+**Laravel Enum** helper and trait methods extend an existing backed enum class for more versatile enum handling. Additionally, **Laravel Enum** offers a fluent way to add and manage <a href="https://www.php.net/manual/en/language.attributes.overview.php" target="_blank">PHP 8 Attributes</a> on backed enum cases. This package comes with four available attributes to readily assign to your enum cases: **Description**, **Id**, **Label**, and **Metadata**. The ExampleEnum class below demonstrates how you can apply these attributes to you enums. You may pick and choose which attributes you wish to take advantage of.
 
 ```php
 use Iteks\Attributes\Description;
@@ -126,15 +126,15 @@ Enum::asSelectArray(ExampleEnum::class);
 ```sh
 array:3 [▼ 
   0 => array:2 [▼
-    "text" => "First Example"
+    "text" => "First-Example"
     "value" => 1
   ]
   1 => array:2 [▼
-    "text" => "Second Example"
+    "text" => "SecondExample (Example)"
     "value" => 2
   ]
   2 => array:2 [▼
-    "text" => "Third Example"
+    "text" => "3rd Eg."
     "value" => 3
   ]
 ]
