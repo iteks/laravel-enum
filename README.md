@@ -107,36 +107,35 @@ enum ExampleEnum: int
 The package provides four attributes to enhance your enum classes and cases:
 
 ### Description Attribute
-Provides descriptive text for enum classes and cases. Supports multiple descriptions and can be used on both the enum class and its cases.
+Provides descriptive text for enum classes and cases.
 
 ```php
 #[Description('A collection of status codes')] // Class-level description
 enum Status: int
 {
     #[Description('Operation completed successfully')] // Case-level description
-    #[Description('HTTP 200 OK equivalent')] // Multiple descriptions supported
     case Success = 200;
 }
 ```
 
 ### Id Attribute
-Provides unique identifiers for enum cases. While technically supported on classes, it is recommended to use this attribute only on enum cases.
+Provides unique identifiers for enum cases.
 
 ```php
 enum Status: int
 {
-    #[Id(1)] // Recommended: Use on enum cases only
+    #[Id(1)]
     case Draft = 0;
 }
 ```
 
 ### Label Attribute
-Provides human-readable labels for enum cases. While technically supported on classes, it is recommended to use this attribute only on enum cases.
+Provides human-readable labels for enum cases.
 
 ```php
 enum Status: int
 {
-    #[Label('In Progress')] // Recommended: Use on enum cases only
+    #[Label('In Progress')]
     case Processing = 1;
 }
 ```
@@ -146,22 +145,18 @@ Provides additional metadata for enum classes and cases. Supports multiple metad
 
 ```php
 #[Metadata(['version' => '1.0'])] // Class-level metadata
-#[Metadata(['category' => 'status'])] // Multiple metadata supported
 enum Status: int
 {
     #[Metadata(['severity' => 'error'])] // Case-level metadata
-    #[Metadata(['deprecated' => true])] // Multiple metadata supported
     case Error = 500;
 }
 ```
 
 ### Attribute Capabilities Summary
-- **Description**: Class + Cases, Multiple Allowed
-- **Id**: Cases Only (recommended), Multiple Not Recommended
-- **Label**: Cases Only (recommended), Multiple Not Recommended
-- **Metadata**: Class + Cases, Multiple Allowed
-
-> **Note**: While Id and Label attributes technically support class-level usage, this is deprecated and will be removed in v2.0.0. Please use these attributes only on enum cases.
+- **Description**: Class + Cases
+- **Id**: Cases Only
+- **Label**: Cases Only
+- **Metadata**: Class + Cases
 
 [top](#usage)
 
