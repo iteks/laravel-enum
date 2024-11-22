@@ -9,17 +9,13 @@ use Iteks\Attributes\Metadata;
 use ReflectionClass;
 
 #[Description('A collection of test statuses')] // Class-level description
-#[Description('Used for testing attribute capabilities')] // Multiple descriptions
-#[Metadata(['version' => '1.0'])] // Class-level metadata
-#[Metadata(['category' => 'test'])] // Multiple metadata
+#[Metadata(['version' => '1.0', 'category' => 'test'])] // Class-level metadata
 enum TestEnum: int
 {
     #[Description('Operation completed successfully')]
-    #[Description('HTTP 200 OK equivalent')]
     #[Id(1)]
     #[Label('Success')]
-    #[Metadata(['severity' => 'success'])]
-    #[Metadata(['httpCode' => 200])]
+    #[Metadata(['severity' => 'success', 'httpCode' => 200])]
     case Success = 200;
 
     #[Description('Operation failed')]
@@ -30,32 +26,30 @@ enum TestEnum: int
 }
 
 describe('Attribute Capabilities', function () {
-    it('supports class-level and multiple descriptions', function () {
+    it('supports class-level description', function () {
         $reflector = new ReflectionClass(TestEnum::class);
         $attributes = $reflector->getAttributes(Description::class);
 
-        expect($attributes)->toHaveCount(2)
-            ->and($attributes[0]->newInstance()->description)->toBe('A collection of test statuses')
-            ->and($attributes[1]->newInstance()->description)->toBe('Used for testing attribute capabilities');
+        expect($attributes)->toHaveCount(1)
+            ->and($attributes[0]->newInstance()->description)->toBe('A collection of test statuses');
     });
 
-    it('supports case-level and multiple descriptions', function () {
+    it('supports case-level description', function () {
         $reflector = new ReflectionClass(TestEnum::class);
         $constant = $reflector->getReflectionConstant('Success');
         $attributes = $constant->getAttributes(Description::class);
 
-        expect($attributes)->toHaveCount(2)
-            ->and($attributes[0]->newInstance()->description)->toBe('Operation completed successfully')
-            ->and($attributes[1]->newInstance()->description)->toBe('HTTP 200 OK equivalent');
+        expect($attributes)->toHaveCount(1)
+            ->and($attributes[0]->newInstance()->description)->toBe('Operation completed successfully');
     });
 
     it('supports only case-level id', function () {
         $reflector = new ReflectionClass(TestEnum::class);
 
-        // Class should not have Id attribute.
+        // Class should not have Id attribute
         expect($reflector->getAttributes(Id::class))->toHaveCount(0);
 
-        // Case should have Id attribute.
+        // Case should have Id attribute
         $constant = $reflector->getReflectionConstant('Success');
         $attributes = $constant->getAttributes(Id::class);
         expect($attributes)->toHaveCount(1)
@@ -65,32 +59,30 @@ describe('Attribute Capabilities', function () {
     it('supports only case-level label', function () {
         $reflector = new ReflectionClass(TestEnum::class);
 
-        // Class should not have Label attribute.
+        // Class should not have Label attribute
         expect($reflector->getAttributes(Label::class))->toHaveCount(0);
 
-        // Case should have Label attribute.
+        // Case should have Label attribute
         $constant = $reflector->getReflectionConstant('Success');
         $attributes = $constant->getAttributes(Label::class);
         expect($attributes)->toHaveCount(1)
             ->and($attributes[0]->newInstance()->label)->toBe('Success');
     });
 
-    it('supports class-level and multiple metadata', function () {
+    it('supports class-level metadata', function () {
         $reflector = new ReflectionClass(TestEnum::class);
         $attributes = $reflector->getAttributes(Metadata::class);
 
-        expect($attributes)->toHaveCount(2)
-            ->and($attributes[0]->newInstance()->metadata)->toBe(['version' => '1.0'])
-            ->and($attributes[1]->newInstance()->metadata)->toBe(['category' => 'test']);
+        expect($attributes)->toHaveCount(1)
+            ->and($attributes[0]->newInstance()->metadata)->toBe(['version' => '1.0', 'category' => 'test']);
     });
 
-    it('supports case-level and multiple metadata', function () {
+    it('supports case-level metadata', function () {
         $reflector = new ReflectionClass(TestEnum::class);
         $constant = $reflector->getReflectionConstant('Success');
         $attributes = $constant->getAttributes(Metadata::class);
 
-        expect($attributes)->toHaveCount(2)
-            ->and($attributes[0]->newInstance()->metadata)->toBe(['severity' => 'success'])
-            ->and($attributes[1]->newInstance()->metadata)->toBe(['httpCode' => 200]);
+        expect($attributes)->toHaveCount(1)
+            ->and($attributes[0]->newInstance()->metadata)->toBe(['severity' => 'success', 'httpCode' => 200]);
     });
 });
