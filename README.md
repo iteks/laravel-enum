@@ -20,7 +20,7 @@ composer require iteks/laravel-enum
 
 ## Usage
 
-- [EnumExample class](#enumexample-class)
+- [ExampleBackedEnum class](#examplebackedenum-class)
 - [Attributes](#attributes)
 - [Enum Helpers (BackedEnum)](#enum-helpers-backedenum)
     - [Enum::asSelectArray()](#enumasselectarray)
@@ -61,11 +61,11 @@ composer require iteks/laravel-enum
     - [Str::splitEnumCase()](#strsplitenumcase)
 
 
-## EnumExample class
+## ExampleBackedEnum class
 
 The **Laravel Enum** methods are designed for <a href="https://www.php.net/manual/en/language.enumerations.backed.php" target="_blank">PHP 8 Backed Enumeration</a> classes.
 
-**Laravel Enum** helper and trait methods extend an existing backed enum class for more versatile enum handling. Additionally, **Laravel Enum** offers a fluent way to add and manage <a href="https://www.php.net/manual/en/language.attributes.overview.php" target="_blank">PHP 8 Attributes</a> on backed enum cases. This package comes with four available attributes to readily assign to your enum cases: **Description**, **Id**, **Label**, and **Metadata**. The ExampleEnum class below demonstrates how you can apply these attributes to you enums. You may pick and choose which attributes you wish to take advantage of.
+**Laravel Enum** helper and trait methods extend an existing backed enum class for more versatile enum handling. Additionally, **Laravel Enum** offers a fluent way to add and manage <a href="https://www.php.net/manual/en/language.attributes.overview.php" target="_blank">PHP 8 Attributes</a> on backed enum cases. This package comes with four available attributes to readily assign to your enum cases: `Description`, `Id`, `Label`, and `Metadata`. The ExampleBackedEnum class below demonstrates how you can apply these attributes to you enums. You may pick and choose which attributes you wish to take advantage of.
 
 ```php
 use Iteks\Attributes\Description;
@@ -75,28 +75,28 @@ use Iteks\Attributes\Metadata;
 use Iteks\Traits\BackedEnum;
 use Iteks\Traits\HasAttributes;
 
-enum ExampleEnum: int
+enum ExampleBackedEnum: int
 {
     use BackedEnum;
     use HasAttributes;
 
-    #[Description('Lorem ipsum dolor sit amet, consectetur adipiscing elit.')]
-    #[Id(0)]
-    #[Label('First-Example')]
-    #[Metadata(['key' => 'value'])]
-    case FirstExample = 1;
+    #[Description('Active status indicating the resource is currently in use')]
+    #[Id(101)]
+    #[Label('Active')]
+    #[Metadata(['status_type' => 'positive', 'display_color' => 'green'])]
+    case CurrentlyActive = 1;
 
-    #[Description('Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.')]
-    #[Id(1)]
-    #[Label('SecondExample (Example)')]
-    #[Metadata('{"key": "value"}')]
-    case SecondExample = 2;
+    #[Description('Pending status indicating the resource is awaiting processing or approval')]
+    #[Id(102)]
+    #[Label('Pending')]
+    #[Metadata('{"status_type": "neutral", "display_color": "yellow"}')]
+    case PendingReview = 2;
 
-    #[Description('Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')]
-    #[Id(2)]
-    #[Label('3rd Eg.')]
+    #[Description('Temporarily suspended status indicating the resource is on hold')]
+    #[Id(103)]
+    #[Label('Suspended (!)')]
     #[Metadata([])]
-    case ThirdExample = 3;
+    case TemporarilySuspended = 3;
 }
 ```
 
@@ -170,8 +170,6 @@ use Iteks\Support\Facades\Enum;
 
 _Note: This group of helpers **does NOT require any trait to be applied** to the target enum class. You may immediately use the the following methods:_
 
-[top](#usage)
-
 ### Enum::asSelectArray()
 
 Get a backed enum class as an array to populate a select element. The array will consist of a `text` key column containing values of the case name in display format, and a `value` keys column containing values using the original simpler values.
@@ -179,55 +177,49 @@ Get a backed enum class as an array to populate a select element. The array will
 _Note: This method will first check for **Label** and **Id** attributes applied to the target enum class. If they are present, the method will prioritize those values. If not present, the method will return a mutated Headline value from the case name._
 
 ```php
-Enum::asSelectArray(ExampleEnum::class);
+$selectArray = Enum::asSelectArray(ExampleBackedEnum::class);
 ```
 
 ```sh
-array:3 [▼ 
+# Result:
+array:3 [▼
   0 => array:2 [▼
-    "text" => "First-Example"
-    "value" => 1
+    "text" => "Active"
+    "value" => 101
   ]
   1 => array:2 [▼
-    "text" => "SecondExample (Example)"
-    "value" => 2
+    "text" => "Pending"
+    "value" => 102
   ]
   2 => array:2 [▼
-    "text" => "3rd Eg."
-    "value" => 3
+    "text" => "Suspended (!)"
+    "value" => 103
   ]
 ]
 ```
-
-[top](#usage)
 
 ### Enum::toLabel()
 
 Create a label from the case name.
 
 ```php
-Enum::toLabel(ExampleEnum::FirstExample);
+$label = Enum::toLabel(ExampleBackedEnum::CurrentlyActive); // 'Currently Active'
 ```
-
-```sh
-"First Example"
-```
-
-[top](#usage)
 
 ### Enum::toLabels()
 
 Create and compile an array of labels from the case names.
 
 ```php
-Enum::toLabels(ExampleEnum::class);
+$labels = Enum::toLabels(ExampleBackedEnum::class);
 ```
 
 ```sh
+# Result:
 array:3 [▼
-  0 => "First Example"
-  1 => "Second Example"
-  2 => "Third Example"
+  0 => "Currently Active"
+  1 => "Pending Review"
+  2 => "Temporarily Suspended"
 ]
 ```
 
@@ -235,7 +227,7 @@ array:3 [▼
 
 ## Enum Helpers (HasAttributes)
 
-First, ensure that the target enum class has the `HasAttributes` trait applied, as shown in the [ExampleEnum class](#enumexample-class) above.
+First, ensure that the target enum class has the `HasAttributes` trait applied, as shown in the [ExampleBackedEnum class](#examplebackedenum-class) above.
 
 Then, import the helper class:
 
@@ -245,222 +237,213 @@ use Iteks\Support\Facades\Enum;
 
 You may then use the following methods:
 
-[top](#usage)
-
 ### Enum::attributes()
 
-Retrieve all of the attributes for all cases.
+Accessing attributes.
+
+Retrieve all attributes for a given case.
 
 ```php
-Enum::attributes(ExampleEnum::FirstExample);
+$attributes = Enum::attributes(ExampleBackedEnum::CurrentlyActive);
 ```
 
 ```sh
+# Result:
 array:5 [▼
   "simpleValue" => 1
-  "description" => "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-  "id" => 0
-  "label" => "First-Example"
-  "metadata" => array:1 [▼
-    "key" => "value"
+  "description" => "Active status indicating the resource is currently in use"
+  "id" => 101
+  "label" => "Active"
+  "metadata" => array:2 [▼
+    "status_type" => "positive"
+    "display_color" => "green"
   ]
 ]
 ```
 
+Retrieve a subset of the attributes for a given case.
+
 ```php
-Enum::attributes(ExampleEnum::FirstExample, ['id', 'label']);
+$attributes = Enum::attributes(ExampleBackedEnum::CurrentlyActive, ['id', 'label']);
 ```
 
 ```sh
+# Result:
 array:2 [▼
-  "id" => 0
-  "label" => "First-Example"
+  "id" => 101
+  "label" => "Active"
 ]
 ```
 
+Retrieve all attributes for all cases.
+
 ```php
-Enum::attributes(ExampleEnum::class);
+$attributes = $Enum::attributes(ExampleBackedEnum::class);
 ```
 
 ```sh
+# Result:
 array:3 [▼
-  "FirstExample" => array:5 [▼
+  "CurrentlyActive" => array:5 [▼
     "simpleValue" => 1
-    "description" => "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-    "id" => 0
-    "label" => "First-Example"
-    "metadata" => array:1 [▼
-      "key" => "value"
-    ]
+    "description" => "Active status indicating the resource is currently in use"
+    "id" => 101
+    "label" => "Active"
+    "metadata" => array:2 [▶]
   ]
-  "SecondExample" => array:5 [▼
+  "PendingReview" => array:5 [▼
     "simpleValue" => 2
-    "description" => "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-    "id" => 1
-    "label" => "SecondExample (Example)"
-    "metadata" => "{"key": "value"}"
+    "description" => "Pending status indicating the resource is awaiting processing or approval"
+    "id" => 102
+    "label" => "Pending"
+    "metadata" => "{"status_type": "neutral", "display_color": "yellow"}"
   ]
-  "ThirdExample" => array:5 [▼
+  "TemporarilySuspended" => array:5 [▼
     "simpleValue" => 3
-    "description" => "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-    "id" => 2
-    "label" => "3rd Eg."
+    "description" => "Temporarily suspended status indicating the resource is on hold"
+    "id" => 103
+    "label" => "Suspended (!)"
     "metadata" => []
   ]
 ]
 ```
 
+Retrieve a subset of the attributes for all cases.
+
 ```php
-Enum::attributes(ExampleEnum::class, ['description', 'metadata']);
+$attributes = $Enum::attributes(ExampleBackedEnum::class, ['description', 'metadata']);
 ```
 
 ```sh
+# Result:
 array:3 [▼
-  "FirstExample" => array:2 [▼
-    "description" => "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-    "metadata" => array:1 [▼
-      "key" => "value"
-    ]
+  "CurrentlyActive" => array:2 [▼
+    "description" => "Active status indicating the resource is currently in use"
+    "metadata" => array:2 [▶]
   ]
-  "SecondExample" => array:2 [▼
-    "description" => "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-    "metadata" => "{"key": "value"}"
+  "PendingReview" => array:2 [▼
+    "description" => "Pending status indicating the resource is awaiting processing or approval"
+    "metadata" => "{"status_type": "neutral", "display_color": "yellow"}"
   ]
-  "ThirdExample" => array:2 [▼
-    "description" => "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+  "TemporarilySuspended" => array:2 [▼
+    "description" => "Temporarily suspended status indicating the resource is on hold"
     "metadata" => []
   ]
 ]
 ```
-
-[top](#usage)
 
 ### Enum::description()
 
 Retrieve the description attribute.
 
 ```php
-Enum::description(ExampleEnum::FirstExample);
+$description = Enum::description(ExampleBackedEnum::CurrentlyActive);
 ```
 
 ```sh
-"Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+# Result:
+"Active status indicating the resource is currently in use"
 ```
-
-[top](#usage)
 
 ### Enum::descriptions()
 
 Retrieve the description attribute for all cases.
 
 ```php
-Enum::descriptions(ExampleEnum::class);
+$descriptions = Enum::descriptions(ExampleBackedEnum::class);
 ```
 
 ```sh
+# Result:
 array:3 [▼
-  0 => "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-  1 => "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-  2 => "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+  0 => "Active status indicating the resource is currently in use"
+  1 => "Pending status indicating the resource is awaiting processing or approval"
+  2 => "Temporarily suspended status indicating the resource is on hold"
 ]
 ```
-
-[top](#usage)
 
 ### Enum::id()
 
 Retrieve the id attribute.
 
 ```php
-Enum::id(ExampleEnum::FirstExample);
+$id = Enum::id(ExampleBackedEnum::CurrentlyActive); //101
 ```
-
-```sh
-0
-```
-
-[top](#usage)
 
 ### Enum::ids()
 
 Retrieve the id attribute for all cases.
 
 ```php
-Enum::ids(ExampleEnum::class);
+$ids = Enum::ids(ExampleBackedEnum::class);
 ```
 
 ```sh
+# Result:
 array:3 [▼
-  0 => 0
-  1 => 1
-  2 => 2
+  0 => 101
+  1 => 102
+  2 => 103
 ]
 ```
-
-[top](#usage)
 
 ### Enum::label()
 
 Retrieve the label attribute.
 
 ```php
-Enum::label(ExampleEnum::FirstExample);
+$label = Enum::label(ExampleBackedEnum::TemporarilySuspended); // 'Suspended (!)'
 ```
-
-```sh
-"First-Example"
-```
-
-[top](#usage)
 
 ### Enum::labels()
 
 Retrieve the label attribute for all cases.
 
 ```php
-Enum::labels(ExampleEnum::class);
+$labels = Enum::labels(ExampleBackedEnum::class);
 ```
 
 ```sh
+# Result:
 array:3 [▼
-  0 => "First-Example"
-  1 => "SecondExample (Example)"
-  2 => "3rd Eg."
+  0 => "Active"
+  1 => "Pending"
+  2 => "Suspended (!)"
 ]
 ```
-
-[top](#usage)
 
 ### Enum::metadata()
 
 Retrieve the metadata attribute.
 
 ```php
-Enum::metadata(ExampleEnum::FirstExample);
+$metadata = Enum::metadata(ExampleBackedEnum::CurrentlyActive);
 ```
 
 ```sh
-array:1 [▼
-  "key" => "value"
+# Result:
+array:2 [▼
+  "status_type" => "positive"
+  "display_color" => "green"
 ]
 ```
-
-[top](#usage)
 
 ### Enum::metadatum()
 
 Retrieve the metadata attribute for all cases.
 
 ```php
-Enum::metadatum(ExampleEnum::class);
+$metadatum = Enum::metadatum(ExampleBackedEnum::class);
 ```
 
 ```sh
+# Result:
 array:3 [▼
-  0 => array:1 [▼
-    "key" => "value"
+  0 => array:2 [▼
+    "status_type" => "positive"
+    "display_color" => "green"
   ]
-  1 => "{"key": "value"}"
+  1 => "{"status_type": "neutral", "display_color": "yellow"}"
   2 => []
 ]
 ```
@@ -469,162 +452,138 @@ array:3 [▼
 
 ## Enum Traits (BackedEnum)
 
-First, ensure that the target enum class has the `BackedEnum` trait applied, as shown in the [ExampleEnum class](#enumexample-class) above.
+First, ensure that the target enum class has the `BackedEnum` trait applied, as shown in the [ExampleBackedEnum class](#examplebackedenum-class) above.
 
 Then, you may then use the following methods:
-
-[top](#usage)
 
 ### asSelectArray()
 
 Get a backed enum class as an array to populate a select element. The array will consist of a `text` key column containing values of the case name in display format, and a `value` keys column containing values using the original simpler values.
 
-_Note: This method will first check for **Label** and **Id** attributes applied to the target enum class. If they are present, the method will prioritize those values. If not present, the method will return a mutated Headline value from the case name._
+_Note: This method will first check for `Label` and `Id` attributes applied to the target enum class. If they are present, the method will prioritize those values. If not present, the method will return a mutated Headline value from the case name._
 
 ```php
-ExampleEnum::asSelectArray();
+$selectArray = ExampleBackedEnum::asSelectArray();
 ```
 
 ```sh
+# Result:
 array:3 [▼
   0 => array:2 [▼
-    "text" => "First-Example"
-    "value" => 0
+    "text" => "Active"
+    "value" => 101
   ]
   1 => array:2 [▼
-    "text" => "SecondExample (Example)"
-    "value" => 1
+    "text" => "Pending"
+    "value" => 102
   ]
   2 => array:2 [▼
-    "text" => "3rd Eg."
-    "value" => 2
+    "text" => "Suspended (!)"
+    "value" => 103
   ]
 ]
 ```
-
-[top](#usage)
 
 ### fromName()
 
 Maps a scalar to an enum instance.
 
 ```php
-ExampleEnum::fromName('FirstExample');
+$enum = ExampleBackedEnum::fromName('CurrentlyActive');
 ```
 
 ```sh
-App\Enums\ExampleEnum {#297 ▼
-  +name: "FirstExample"
+# Result:
+App\Enums\ExampleBackedEnum { ▼
+  +name: "CurrentlyActive"
   +value: 1
 }
 ```
-
-[top](#usage)
 
 ### name()
 
 Retrieve the case name for the given simpler value.
 
 ```php
-ExampleEnum::name(1);
+$caseName = ExampleBackedEnum::name(1); // 'CurrentlyActive'
 ```
-
-```sh
-"FirstExample"
-```
-
-[top](#usage)
 
 ### names()
 
 Retrieve an array containing all of the case names.
 
 ```php
-ExampleEnum::names();
+$caseNames = ExampleBackedEnum::names();
 ```
 
 ```sh
+# Result:
 array:3 [▼
-  0 => "FirstExample"
-  1 => "SecondExample"
-  2 => "ThirdExample"
+  0 => "CurrentlyActive"
+  1 => "PendingReview"
+  2 => "TemporarilySuspended"
 ]
 ```
-
-[top](#usage)
 
 ### toLabel()
 
 Create a label from the case name.
 
 ```php
-ExampleEnum::toLabel(1);
+$label = ExampleBackedEnum::toLabel(1); // 'Currently Active'
 ```
-
-```sh
-"First Example"
-```
-
-[top](#usage)
 
 ### toLabels()
 
 Create and compile an array of labels from the case names.
 
 ```php
-ExampleEnum::toLabels();
+$labels = ExampleBackedEnum::toLabels();
 ```
 
 ```sh
+# Result:
 array:3 [▼
-  0 => "First Example"
-  1 => "Second Example"
-  2 => "Third Example"
+  0 => "Currently Active"
+  1 => "Pending Review"
+  2 => "Temporarily Suspended"
 ]
 ```
-
-[top](#usage)
 
 ### tryFromName()
 
 Maps a scalar to an enum instance or null.
 
 ```php
-ExampleEnum::tryFromName('FirstExample');
+$enum = ExampleBackedEnum::tryFromName('CurrentlyActive');
 ```
 
 ```sh
-App\Enums\ExampleEnum {#297 ▼
-  +name: "FirstExample"
+# Result:
+App\Enums\ExampleBackedEnum { ▼
+  +name: "CurrentlyActive"
   +value: 1
 }
 ```
-
-[top](#usage)
 
 ### value()
 
 Retrieve the simpler value for the given case name.
 
 ```php
-ExampleEnum::value('FirstExample');
+$simplerValue = ExampleBackedEnum::value('CurrentlyActive'); // 1
 ```
-
-```sh
-1
-```
-
-[top](#usage)
 
 ### values()
 
 Retrieve an array containing all of the simpler values.
 
 ```php
-ExampleEnum::values();
+$simplerValues = ExampleBackedEnum::values();
 ```
 
 ```sh
+# Result:
 array:3 [▼
   0 => 1
   1 => 2
@@ -636,226 +595,221 @@ array:3 [▼
 
 ## Enum Traits (HasAttributes)
 
-First, ensure that the target enum class has the `HasAttributes` trait applied, as shown in the [ExampleEnum class](#enumexample-class) above.
+First, ensure that the target enum class has the `HasAttributes` trait applied, as shown in the [ExampleBackedEnum class](#examplebackedenum-class) above.
 
 Then, you may then use the following methods:
 
-[top](#usage)
-
 ### attributes()
 
-Retrieve all of the attributes for all cases.
+Retrieve the attributes for a given case.
 
 ```php
-ExampleEnum::attributes('FirstExample');
+$attributes = ExampleBackedEnum::attributes('CurrentlyActive');
 ```
 
 ```sh
+# Result:
 array:5 [▼
   "simpleValue" => 1
-  "description" => "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-  "id" => 0
-  "label" => "First-Example"
-  "metadata" => array:1 [▼
-    "key" => "value"
+  "description" => "Active status indicating the resource is currently in use"
+  "id" => 101
+  "label" => "Active"
+  "metadata" => array:2 [▼
+    "status_type" => "positive"
+    "display_color" => "green"
   ]
 ]
 ```
 
+Retrieve a subset of the attributes for a given case.
+
 ```php
-ExampleEnum::attributes('FirstExample', ['id', 'label']);
+$attributes = ExampleBackedEnum::attributes('CurrentlyActive', ['id', 'label']);
 ```
 
 ```sh
+# Result:
 array:2 [▼
-  "id" => 0
-  "label" => "First-Example"
+  "id" => 101
+  "label" => "Active"
 ]
 ```
 
+Retrieve the attributes for all cases.
+
 ```php
-ExampleEnum::attributes();
+$attributes = ExampleBackedEnum::attributes();
 ```
 
 ```sh
+# Result:
 array:3 [▼
-  "FirstExample" => array:5 [▼
+  "CurrentlyActive" => array:5 [▼
     "simpleValue" => 1
-    "description" => "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-    "id" => 0
-    "label" => "First-Example"
-    "metadata" => array:1 [▼
-      "key" => "value"
+    "description" => "Active status indicating the resource is currently in use"
+    "id" => 101
+    "label" => "Active"
+    "metadata" => array:2 [▼
+      "status_type" => "positive"
+      "display_color" => "green"
     ]
   ]
-  "SecondExample" => array:5 [▼
+  "PendingReview" => array:5 [▼
     "simpleValue" => 2
-    "description" => "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-    "id" => 1
-    "label" => "SecondExample (Example)"
-    "metadata" => "{"key": "value"}"
+    "description" => "Pending status indicating the resource is awaiting processing or approval"
+    "id" => 102
+    "label" => "Pending"
+    "metadata" => "{"status_type": "neutral", "display_color": "yellow"}"
   ]
-  "ThirdExample" => array:5 [▼
+  "TemporarilySuspended" => array:5 [▼
     "simpleValue" => 3
-    "description" => "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-    "id" => 2
-    "label" => "3rd Eg."
+    "description" => "Temporarily suspended status indicating the resource is on hold"
+    "id" => 103
+    "label" => "Suspended (!)"
     "metadata" => []
   ]
 ]
 ```
 
+Retrieve a subset of the attributes for all cases/
+
 ```php
-ExampleEnum::attributes(null, ['description', 'metadata']);
+$attributes = ExampleBackedEnum::attributes(null, ['description', 'metadata']);
 ```
 
 ```sh
+# Result:
 array:3 [▼
-  "FirstExample" => array:2 [▼
-    "description" => "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-    "metadata" => array:1 [▼
-      "key" => "value"
+  "CurrentlyActive" => array:2 [▼
+    "description" => "Active status indicating the resource is currently in use"
+    "metadata" => array:2 [▼
+      "status_type" => "positive"
+      "display_color" => "green"
     ]
   ]
-  "SecondExample" => array:2 [▼
-    "description" => "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-    "metadata" => "{"key": "value"}"
+  "PendingReview" => array:2 [▼
+    "description" => "Pending status indicating the resource is awaiting processing or approval"
+    "metadata" => "{"status_type": "neutral", "display_color": "yellow"}"
   ]
-  "ThirdExample" => array:2 [▼
-    "description" => "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+  "TemporarilySuspended" => array:2 [▼
+    "description" => "Temporarily suspended status indicating the resource is on hold"
     "metadata" => []
   ]
 ]
 ```
-
-[top](#usage)
 
 ### description()
 
 Retrieve the description attribute.
 
 ```php
-ExampleEnum::description('FirstExample');
+$description = ExampleBackedEnum::description('CurrentlyActive');
 ```
 
 ```sh
-"Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+# Result:
+"Active status indicating the resource is currently in use"
 ```
-
-[top](#usage)
 
 ### descriptions()
 
 Retrieve the description attribute for all cases.
 
 ```php
-ExampleEnum::descriptions();
+$descriptions = ExampleBackedEnum::descriptions();
 ```
 
 ```sh
+# Result:
 array:3 [▼
-  0 => "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-  1 => "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-  2 => "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+  0 => "Active status indicating the resource is currently in use"
+  1 => "Pending status indicating the resource is awaiting processing or approval"
+  2 => "Temporarily suspended status indicating the resource is on hold"
 ]
 ```
-
-[top](#usage)
 
 ### id()
 
 Retrieve the id attribute.
 
 ```php
-ExampleEnum::id('FirstExample');
+$id = ExampleBackedEnum::id('CurrentlyActive'); // 101
 ```
-
-```sh
-0
-```
-
-[top](#usage)
 
 ### ids()
 
 Retrieve the id attribute for all cases.
 
 ```php
-ExampleEnum::ids();
+$ids = ExampleBackedEnum::ids();
 ```
 
 ```sh
+# Result:
 array:3 [▼
-  0 => 0
-  1 => 1
-  2 => 2
+  0 => 101
+  1 => 102
+  2 => 103
 ]
 ```
-
-[top](#usage)
 
 ### label()
 
 Retrieve the label attribute.
 
 ```php
-ExampleEnum::label('FirstExample');
+$label = ExampleBackedEnum::label('CurrentlyActive'); // 'Active'
 ```
-
-```sh
-"First-Example"
-```
-
-[top](#usage)
 
 ### labels()
 
 Retrieve the label attribute for all cases.
 
 ```php
-ExampleEnum::labels();
+$labels = ExampleBackedEnum::labels();
 ```
 
 ```sh
+# Result:
 array:3 [▼
-  0 => "First-Example"
-  1 => "SecondExample (Example)"
-  2 => "3rd Eg."
+  0 => "Active"
+  1 => "Pending"
+  2 => "Suspended (!)"
 ]
 ```
-
-[top](#usage)
 
 ### metadata()
 
 Retrieve the metadata attribute.
 
 ```php
-ExampleEnum::metadata('FirstExample');
+$metadata = ExampleBackedEnum::metadata('CurrentlyActive');
 ```
 
 ```sh
-array:1 [▼
-  "key" => "value"
+# Result:
+array:2 [▼
+  "status_type" => "positive"
+  "display_color" => "green"
 ]
 ```
-
-[top](#usage)
 
 ### metadatum()
 
 Retrieve the metadata attribute for all cases.
 
 ```php
-ExampleEnum::metadatum();
+$metadatum = ExampleBackedEnum::metadatum();
 ```
 
 ```sh
+# Result:
 array:3 [▼
-  0 => array:1 [▼
-    "key" => "value"
+  0 => array:2 [▼
+    "status_type" => "positive"
+    "display_color" => "green"
   ]
-  1 => "{"key": "value"}"
+  1 => "{"status_type": "neutral", "display_color": "yellow"}"
   2 => []
 ]
 ```
@@ -866,32 +820,20 @@ array:3 [▼
 
 These helperas are booted when installing the package and are immediately available for use.
 
-[top](#usage)
-
 ### Str::splitConstantCase()
 
 Splits a "CONSTANT_CASE" string into words separated by whitespace.
 
 ```php
-Str::splitConstantCase('FIRST_EXAMPLE');
+$string = Str::splitConstantCase('CONSTANT_CASE'); // 'CONSTANT CASE'
 ```
-
-```sh
-"FIRST EXAMPLE"
-```
-
-[top](#usage)
 
 ### Str::splitEnumCase()
 
 Splits a "EnumCase" string into words separated by whitespace.
 
 ```php
-Str::splitEnumCase('FirstExample');
-```
-
-```sh
-"First Example"
+$string = Str::splitEnumCase('EnumCase'); // 'Enum Case'
 ```
 
 [top](#usage)
