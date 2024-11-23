@@ -1,6 +1,6 @@
 <?php
 
-use Iteks\Support\Enums\ExampleEnum;
+use Iteks\Support\Enums\ExampleBackedEnum;
 use Iteks\Support\EnumServiceProvider;
 use Iteks\Support\Facades\Enum;
 use Iteks\Support\Services\BackedEnumService;
@@ -33,7 +33,7 @@ describe('Service Provider', function () {
 
         Enum::setFacadeApplication($app);
 
-        $array = Enum::asSelectArray(ExampleEnum::class);
+        $array = Enum::asSelectArray(ExampleBackedEnum::class);
 
         expect($array)->toBeArray();
     });
