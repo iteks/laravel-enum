@@ -278,7 +278,7 @@ array:2 [▼
 Retrieve all attributes for all cases.
 
 ```php
-$attributes = $Enum::attributes(ExampleBackedEnum::class);
+$attributes = Enum::attributes(ExampleBackedEnum::class);
 ```
 
 ```sh
@@ -311,7 +311,7 @@ array:3 [▼
 Retrieve a subset of the attributes for all cases.
 
 ```php
-$attributes = $Enum::attributes(ExampleBackedEnum::class, ['description', 'metadata']);
+$attributes = Enum::attributes(ExampleBackedEnum::class, ['description', 'metadata']);
 ```
 
 ```sh
