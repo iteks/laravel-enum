@@ -6,65 +6,70 @@ use Iteks\Attributes\Description;
 use Iteks\Attributes\Id;
 use Iteks\Attributes\Label;
 use Iteks\Attributes\Metadata;
-use Iteks\Support\Enums\ExampleBackedEnum;
+use Iteks\Support\Enums\BackedEnumShape;
 use ReflectionClass;
 
 describe('Attribute Capabilities', function () {
-    it('supports class-level description', function () {
-        $reflector = new ReflectionClass(ExampleBackedEnum::class);
+    it('supports class-level and multiple descriptions', function () {
+        $reflector = new ReflectionClass(BackedEnumShape::class);
         $attributes = $reflector->getAttributes(Description::class);
 
-        expect($attributes)->toHaveCount(0); // ExampleBackedEnum doesn't have class-level description
+        expect($attributes)->toHaveCount(1)
+            ->and($attributes[0]->newInstance()->description)->toBe('A collection of geometric shapes, used for demonstrating enum attributes');
     });
 
-    it('supports case-level description', function () {
-        $reflector = new ReflectionClass(ExampleBackedEnum::class);
-        $constant = $reflector->getReflectionConstant('CurrentlyActive');
+    it('supports case-level and multiple descriptions', function () {
+        $reflector = new ReflectionClass(BackedEnumShape::class);
+        $constant = $reflector->getReflectionConstant('RoundCircle');
         $attributes = $constant->getAttributes(Description::class);
 
         expect($attributes)->toHaveCount(1)
-            ->and($attributes[0]->newInstance()->description)->toBe('Active status indicating the resource is currently in use');
+            ->and($attributes[0]->newInstance()->description)->toBe('A circle is a perfectly round geometric figure, every point on the circle is equidistant from the center');
     });
 
     it('supports only case-level id', function () {
-        $reflector = new ReflectionClass(ExampleBackedEnum::class);
+        $reflector = new ReflectionClass(BackedEnumShape::class);
 
-        // Class should not have Id attribute
+        // Class should not have Id attribute.
         expect($reflector->getAttributes(Id::class))->toHaveCount(0);
 
-        // Case should have Id attribute
-        $constant = $reflector->getReflectionConstant('CurrentlyActive');
+        // Case should have Id attribute.
+        $constant = $reflector->getReflectionConstant('RoundCircle');
         $attributes = $constant->getAttributes(Id::class);
         expect($attributes)->toHaveCount(1)
-            ->and($attributes[0]->newInstance()->id)->toBe(101);
+            ->and($attributes[0]->newInstance()->id)->toBe(1);
     });
 
     it('supports only case-level label', function () {
-        $reflector = new ReflectionClass(ExampleBackedEnum::class);
+        $reflector = new ReflectionClass(BackedEnumShape::class);
 
-        // Class should not have Label attribute
+        // Class should not have Label attribute.
         expect($reflector->getAttributes(Label::class))->toHaveCount(0);
 
-        // Case should have Label attribute
-        $constant = $reflector->getReflectionConstant('CurrentlyActive');
+        // Case should have Label attribute.
+        $constant = $reflector->getReflectionConstant('RoundCircle');
         $attributes = $constant->getAttributes(Label::class);
         expect($attributes)->toHaveCount(1)
-            ->and($attributes[0]->newInstance()->label)->toBe('Active');
+            ->and($attributes[0]->newInstance()->label)->toBe('Round Circle');
     });
 
-    it('supports class-level metadata', function () {
-        $reflector = new ReflectionClass(ExampleBackedEnum::class);
+    it('supports class-level and multiple metadata', function () {
+        $reflector = new ReflectionClass(BackedEnumShape::class);
         $attributes = $reflector->getAttributes(Metadata::class);
 
-        expect($attributes)->toHaveCount(0); // ExampleBackedEnum doesn't have class-level metadata
+        expect($attributes)->toHaveCount(1)
+            ->and($attributes[0]->newInstance()->metadata)->toBe(['version' => '1.0', 'category' => 'geometry']);
     });
 
-    it('supports case-level metadata', function () {
-        $reflector = new ReflectionClass(ExampleBackedEnum::class);
-        $constant = $reflector->getReflectionConstant('CurrentlyActive');
+    it('supports case-level and multiple metadata', function () {
+        $reflector = new ReflectionClass(BackedEnumShape::class);
+        $constant = $reflector->getReflectionConstant('BoxSquare');
         $attributes = $constant->getAttributes(Metadata::class);
 
+        $expectedMetadata = json_decode('{"color": "blue", "sides": 4, "type": "polygon", "regular": true}', true);
+        $actualMetadata = json_decode($attributes[0]->newInstance()->metadata, true);
+
         expect($attributes)->toHaveCount(1)
-            ->and($attributes[0]->newInstance()->metadata)->toBe(['status_type' => 'positive', 'display_color' => 'green']);
+            ->and($actualMetadata)->toBe($expectedMetadata);
     });
 });
