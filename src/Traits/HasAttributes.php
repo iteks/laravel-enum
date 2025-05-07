@@ -6,6 +6,7 @@ use Iteks\Attributes\Description;
 use Iteks\Attributes\Id;
 use Iteks\Attributes\Label;
 use Iteks\Attributes\Metadata;
+use Iteks\Support\Services\MetadataAccessor;
 use ReflectionClassConstant;
 
 trait HasAttributes
@@ -50,13 +51,12 @@ trait HasAttributes
     /**
      * Retrieve the description attribute for all cases.
      *
-     * @return array<int, string|null>
+     * @param  'name'|'value'|null  $keyBy  Whether to key the result by case name or case value. Defaults to zero-indexed array.
+     * @return array<int|string, string|null>
      */
-    public static function descriptions(): array
+    public static function descriptions(?string $keyBy = null): array
     {
-        return array_map(function ($case): ?string {
-            return self::description($case->name);
-        }, static::cases());
+        return self::mapCasesTo(fn ($name) => self::description($name), $keyBy);
     }
 
     /**
@@ -75,13 +75,12 @@ trait HasAttributes
     /**
      * Retrieve the id attribute for all cases.
      *
-     * @return array<int, int|string|null>
+     * @param  'name'|'value'|null  $keyBy  Whether to key the result by case name or case value. Defaults to zero-indexed array.
+     * @return array<int|string, int|string|null>
      */
-    public static function ids(): array
+    public static function ids(?string $keyBy = null): array
     {
-        return array_map(function ($case): int|string|null {
-            return self::id($case->name);
-        }, static::cases());
+        return self::mapCasesTo(fn ($name) => self::id($name), $keyBy);
     }
 
     /**
@@ -100,36 +99,64 @@ trait HasAttributes
     /**
      * Retrieve the label attribute for all cases.
      *
-     * @return array<int, string|null>
+     * @param  'name'|'value'|null  $keyBy  Whether to key the result by case name or case value. Defaults to zero-indexed array.
+     * @return array<int|string, string|null>
      */
-    public static function labels(): array
+    public static function labels(?string $keyBy = null): array
     {
-        return array_map(function ($case): ?string {
-            return self::label($case->name);
-        }, static::cases());
+        return self::mapCasesTo(fn ($name) => self::label($name), $keyBy);
     }
 
     /**
-     * Retrieve the metadata attribute.
+     * Retrieve the metadata attribute or specific metadata values by key(s).
      *
      * @param  string  $name  The case name.
-     * @return array|string|null
+     * @param  string|array|null  $key  Optional key or array of keys to retrieve specific metadata values.
+     * @return mixed
      */
-    public static function metadata(string $name): array|string|null
+    public static function metadata(string $name, string|array|null $key = null): mixed
     {
-        return self::mapAttributeClass(Metadata::class, self::mapFromCase($name))?->metadata;
+        $metadata = self::mapAttributeClass(Metadata::class, self::mapFromCase($name))?->metadata;
+
+        // Handle JSON string metadata
+        if (is_string($metadata) && str_starts_with(trim($metadata), '{')) {
+            $decoded = json_decode($metadata, true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $metadata = $decoded;
+            }
+        }
+
+        if ($key === null || ! is_array($metadata)) {
+            return $metadata;
+        }
+
+        if (is_array($key)) {
+            return array_intersect_key($metadata, array_flip($key));
+        }
+
+        return $metadata[$key] ?? null;
     }
 
     /**
-     * Retrieve the metadata attribute for all cases.
+     * Retrieve the metadata attribute for all cases, optionally filtered by metadata key(s).
      *
-     * @return array<int, array|string|null>
+     * @param  string|array|null  $key  Optional key or array of keys to retrieve specific metadata values.
+     * @param  'name'|'value'|null  $keyBy  Whether to key the result by case name or case value. Defaults to zero-indexed array.
+     * @return array<string|int, mixed>
      */
-    public static function metadatum(): array
+    public static function metadatum(string|array|null $key = null, ?string $keyBy = null): array
     {
-        return array_map(function ($case): array|string|null {
-            return self::metadata($case->name);
-        }, static::cases());
+        return self::mapCasesTo(fn ($name) => self::metadata($name, $key), $keyBy);
+    }
+
+    /**
+     * Get a metadata accessor for property-like access to metadata values.
+     *
+     * @return MetadataAccessor
+     */
+    public function meta(): MetadataAccessor
+    {
+        return new MetadataAccessor($this);
     }
 
     /**
@@ -186,5 +213,36 @@ trait HasAttributes
     protected static function mapFromCase(string $name): mixed
     {
         return self::__tryFromName($name);
+    }
+
+    /**
+     * Map enum cases to a given callback, optionally keyed by 'name' or 'value'.
+     *
+     * @template T
+     *
+     * @param  callable(string): T  $callback  A function that receives the enum case name as string.
+     * @param  'name'|'value'|null  $keyBy
+     * @return array<string|int, T>
+     */
+    protected static function mapCasesTo(callable $callback, ?string $keyBy = null): array
+    {
+        $cases = static::cases(); // use static for late binding
+
+        if ($keyBy === null) {
+            return array_map(
+                fn ($case) => $callback($case->name),
+                $cases
+            );
+        }
+
+        $keys = match ($keyBy) {
+            'value' => array_column($cases, 'value'),
+            default => array_column($cases, 'name'),
+        };
+
+        return array_map(
+            fn ($case) => $callback($case->name),
+            array_combine($keys, $cases)
+        );
     }
 }

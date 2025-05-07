@@ -18,7 +18,7 @@ class EnumServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton('enum', function () {
-            return new EnumService(new BackedEnumService(), new HasAttributesService());
+            return new EnumService(new BackedEnumService, new HasAttributesService);
         });
 
         // $this->app->alias('enum', EnumService::class);

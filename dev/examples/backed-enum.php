@@ -1,6 +1,6 @@
 <?php
 
-use Iteks\Support\Enums\ExampleBackedEnum;
+use Iteks\Support\Enums\BackedEnumShape;
 use Iteks\Support\Facades\Enum;
 
 // Enum Helpers (BackedEnum)
@@ -8,16 +8,16 @@ echo '<details>';
 echo '<summary>Enum Helpers (BackedEnum)</summary>';
 
 echo '<pre>';
-$selectArray = Enum::asSelectArray(ExampleBackedEnum::class);
-echo '$selectArray = Enum::asSelectArray(ExampleBackedEnum::class);';
-dump($selectArray);
+$options = Enum::asSelectArray(BackedEnumShape::class);
+echo '$options = Enum::asSelectArray(BackedEnumShape::class);';
+dump($options);
 
-$label = Enum::toLabel(ExampleBackedEnum::CurrentlyActive);
-echo '$label = Enum::toLabel(ExampleBackedEnum::CurrentlyActive);';
+$label = Enum::toLabel(BackedEnumShape::RoundCircle);
+echo '$label = Enum::toLabel(BackedEnumShape::RoundCircle);';
 dump($label);
 
-$labels = Enum::toLabels(ExampleBackedEnum::class);
-echo '$labels = Enum::toLabels(ExampleBackedEnum::class);';
+$labels = Enum::toLabels(BackedEnumShape::class);
+echo '$labels = Enum::toLabels(BackedEnumShape::class);';
 dump($labels);
 echo '</pre>';
 echo '</details>';
@@ -27,40 +27,42 @@ echo '<details>';
 echo '<summary>Enum Traits (BackedEnum)</summary>';
 
 echo '<pre>';
-$selectArray = ExampleBackedEnum::asSelectArray();
-echo '$selectArray = ExampleBackedEnum::asSelectArray();';
-dump($selectArray);
+$options = BackedEnumShape::asSelectArray();
+echo '$options = BackedEnumShape::asSelectArray();';
+dump($options);
 
-$enum = ExampleBackedEnum::fromName('CurrentlyActive');
-echo '$enum = ExampleBackedEnum::fromName(\'CurrentlyActive\');';
+$enum = BackedEnumShape::fromName('RoundCircle');
+echo '$enum = BackedEnumShape::fromName(\'RoundCircle\');';
 dump($enum);
 
-$caseName = ExampleBackedEnum::name(1);
-echo '$caseName = ExampleBackedEnum::name(1);';
-dump($caseName);
+$name = BackedEnumShape::name('circle');
+// $name = BackedEnumShape::RoundCircle->name();
+echo '$name = BackedEnumShape::name(\'circle\');';
+dump($name);
 
-$caseNames = ExampleBackedEnum::names();
-echo '$caseNames = ExampleBackedEnum::names();';
-dump($caseNames);
+$names = BackedEnumShape::names();
+echo '$names = BackedEnumShape::names();';
+dump($names);
 
-$label = ExampleBackedEnum::toLabel(1);
-echo '$label = ExampleBackedEnum::toLabel(1);';
+$label = BackedEnumShape::toLabel('circle');
+// $label = BackedEnumShape::RoundCircle->toLabel();
+echo '$label = BackedEnumShape::toLabel(\'circle\');';
 dump($label);
 
-$labels = ExampleBackedEnum::toLabels();
-echo '$labels = ExampleBackedEnum::toLabels();';
+$labels = BackedEnumShape::toLabels();
+echo '$labels = BackedEnumShape::toLabels();';
 dump($labels);
 
-$enum = ExampleBackedEnum::tryFromName('CurrentlyActive');
-echo '$enum = ExampleBackedEnum::tryFromName(\'CurrentlyActive\');';
+$enum = BackedEnumShape::tryFromName('RoundCircle');
+echo '$enum = BackedEnumShape::tryFromName(\'RoundCircle\');';
 dump($enum);
 
-$simplerValue = ExampleBackedEnum::value('CurrentlyActive');
-echo '$simplerValue = ExampleBackedEnum::value(\'CurrentlyActive\');';
+$simplerValue = BackedEnumShape::value('RoundCircle');
+echo '$simplerValue = BackedEnumShape::value(\'RoundCircle\');';
 dump($simplerValue);
 
-$simplerValues = ExampleBackedEnum::values();
-echo '$simplerValues = ExampleBackedEnum::values();';
+$simplerValues = BackedEnumShape::values();
+echo '$simplerValues = BackedEnumShape::values();';
 dump($simplerValues);
 echo '</pre>';
 echo '</details>';

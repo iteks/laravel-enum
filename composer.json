@@ -34,7 +34,7 @@
         }
     },
     "scripts": {
-        "pint:lint": "pint -v --test",
+        "pint": "pint -v --test",
         "pint:fix": "pint -v",
         "phpstan": [
             "phpstan analyse --ansi"

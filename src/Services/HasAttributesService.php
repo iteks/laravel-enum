@@ -46,13 +46,12 @@ class HasAttributesService
      * Retrieve the description attribute for all cases.
      *
      * @param  string  $enum  The enum class instance.
+     * @param  'name'|'value'|null  $keyBy  Whether to key the result by case name or case value. Defaults to zero-indexed array.
      * @return array<string|null>
      */
-    public static function descriptions(string $enum): array
+    public static function descriptions(string $enum, ?string $keyBy = null): array
     {
-        return array_map(function ($case): ?string {
-            return self::description($case);
-        }, $enum::cases());
+        return self::mapCasesTo($enum, fn ($case) => self::description($case), $keyBy);
     }
 
     /**
@@ -70,13 +69,12 @@ class HasAttributesService
      * Retrieve the id attribute for all cases.
      *
      * @param  string  $enum  The enum class instance.
+     * @param  'name'|'value'|null  $keyBy  Whether to key the result by case name or case value. Defaults to zero-indexed array.
      * @return array<int|string|null>
      */
-    public static function ids(string $enum): array
+    public static function ids(string $enum, ?string $keyBy = null): array
     {
-        return array_map(function ($case): int|string|null {
-            return self::id($case);
-        }, $enum::cases());
+        return self::mapCasesTo($enum, fn ($case) => self::id($case), $keyBy);
     }
 
     /**
@@ -94,37 +92,74 @@ class HasAttributesService
      * Retrieve the label attribute for all cases.
      *
      * @param  string  $enum  The enum class instance.
+     * @param  'name'|'value'|null  $keyBy  Whether to key the result by case name or case value. Defaults to zero-indexed array.
      * @return array<string|null>
      */
-    public static function labels(string $enum): array
+    public static function labels(string $enum, ?string $keyBy = null): array
     {
-        return array_map(function ($case): ?string {
-            return self::label($case);
-        }, $enum::cases());
+        return self::mapCasesTo($enum, fn ($case) => self::label($case), $keyBy);
     }
 
     /**
-     * Retrieve the metadata attribute.
+     * Retrieve the metadata attribute or specific metadata values by key(s).
      *
      * @param  mixed  $case  The enum case instance.
-     * @return array|string|null
+     * @param  string|array|null  $key  Optional key or array of keys to retrieve specific metadata values.
+     * @return mixed
      */
-    public static function metadata(mixed $case): array|string|null
+    public static function metadata(mixed $case, string|array|null $key = null): mixed
     {
-        return self::tryAttributeClass(Metadata::class, $case)?->metadata;
+        $metadata = self::tryAttributeClass(Metadata::class, $case)?->metadata;
+
+        // Handle JSON string metadata
+        if (is_string($metadata) && str_starts_with(trim($metadata), '{')) {
+            $decoded = json_decode($metadata, true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $metadata = $decoded;
+            }
+        }
+
+        if ($key === null || ! is_array($metadata)) {
+            return $metadata;
+        }
+
+        if (is_array($key)) {
+            return array_intersect_key($metadata, array_flip($key));
+        }
+
+        return $metadata[$key] ?? null;
     }
 
     /**
-     * Retrieve the metadata attribute for all cases.
+     * Retrieve the metadata attribute for all cases, optionally filtered by metadata key(s).
      *
      * @param  string  $enum  The enum class instance.
-     * @return array<array|string|null>
+     * @param  string|array|null  $key  Optional key or array of keys to retrieve specific metadata values.
+     * @param  'name'|'value'|null  $keyBy  Whether to key the result by case name or case value. Defaults to zero-indexed array.
+     * @return array<string|int, mixed>
      */
-    public static function metadatum(string $enum): array
+    public static function metadatum(string $enum, string|array|null $key = null, ?string $keyBy = null): array
     {
-        return array_map(function ($case): array|string|null {
-            return self::metadata($case);
-        }, $enum::cases());
+        return self::mapCasesTo($enum, fn ($case) => self::metadata($case, $key), $keyBy);
+    }
+
+    /**
+     * Try to get an attribute class instance.
+     *
+     * @param  string  $attribute  The attribute class.
+     * @param  mixed  $case  The case instance.
+     * @return mixed
+     */
+    public static function tryAttributeClass(string $attribute, mixed $case): mixed
+    {
+        $ref = new ReflectionClassConstant($case::class, $case->name);
+        $classAttributes = $ref->getAttributes($attribute);
+
+        if (count($classAttributes) === 0) {
+            return null;
+        }
+
+        return $classAttributes[0]->newInstance();
     }
 
     /**
@@ -154,21 +189,34 @@ class HasAttributesService
     }
 
     /**
-     * Maps an attribute class to an enum instance.
+     * Map enum cases to a given callback, optionally keyed by 'name' or 'value'.
      *
-     * @param  string  $attribute  The attribute class.
-     * @param  mixed  $case  The enum case instance.
-     * @return mixed
+     * @template T
+     *
+     * @param  mixed  $enum  The enum instance.
+     * @param  callable(mixed): T  $callback
+     * @param  'name'|'value'|null  $keyBy
+     * @return array<string|int, T>
      */
-    protected static function tryAttributeClass(string $attribute, mixed $case): mixed
+    protected static function mapCasesTo(mixed $enum, callable $callback, ?string $keyBy = null): array
     {
-        $ref = new ReflectionClassConstant($case::class, $case->name);
-        $classAttributes = $ref->getAttributes($attribute);
+        $cases = $enum::cases();
 
-        if (count($classAttributes) === 0) {
-            return null;
+        if ($keyBy === null) {
+            return array_map(
+                fn ($case) => $callback($case),
+                $cases
+            );
         }
 
-        return $classAttributes[0]->newInstance();
+        $keys = match ($keyBy) {
+            'value' => array_column($cases, 'value'),
+            default => array_column($cases, 'name'),
+        };
+
+        return array_map(
+            fn ($case) => $callback($case),
+            array_combine($keys, $cases)
+        );
     }
 }

@@ -16,6 +16,5 @@ class Metadata
      */
     public function __construct(
         public array|string $metadata,
-    ) {
-    }
+    ) {}
 }

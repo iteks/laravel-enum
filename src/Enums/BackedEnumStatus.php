@@ -9,7 +9,7 @@ use Iteks\Attributes\Metadata;
 use Iteks\Traits\BackedEnum;
 use Iteks\Traits\HasAttributes;
 
-enum ExampleBackedEnum: int
+enum BackedEnumStatus: int
 {
     use BackedEnum;
     use HasAttributes;

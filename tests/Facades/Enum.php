@@ -1,6 +1,6 @@
 <?php
 
-use Iteks\Support\Enums\ExampleBackedEnum;
+use Iteks\Support\Enums\BackedEnumShape;
 use Iteks\Support\EnumServiceProvider;
 use Iteks\Support\Facades\Enum;
 
@@ -12,7 +12,7 @@ describe('Facade', function () {
 
         Enum::setFacadeApplication($app);
 
-        $array = Enum::asSelectArray(ExampleBackedEnum::class);
+        $array = Enum::asSelectArray(BackedEnumShape::class);
 
         expect($array)->toBeArray();
     });

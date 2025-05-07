@@ -15,6 +15,5 @@ class Id
      */
     public function __construct(
         public int|string $id,
-    ) {
-    }
+    ) {}
 }
