@@ -20,431 +20,534 @@ composer require iteks/laravel-enum
 
 ## Usage
 
-- [ExampleBackedEnum class](#examplebackedenum-class)
 - [Attributes](#attributes)
 - [Enum Helpers (BackedEnum)](#enum-helpers-backedenum)
-    - [Enum::asSelectArray()](#enumasselectarray)
-    - [Enum::toLabel()](#enumtolabel)
-    - [Enum::toLabels()](#enumtolabels)
+  - [Enum::asSelectArray()](#enumasselectarray)
+  - [Enum::toLabel()](#enumtolabel)
+  - [Enum::toLabels()](#enumtolabels)
 - [Enum Helpers (HasAttributes)](#enum-helpers-hasattributes)
-    - [Enum::attributes()](#enumattributes)
-    - [Enum::description()](#enumdescription)
-    - [Enum::descriptions()](#enumdescriptions)
-    - [Enum::id()](#enumid)
-    - [Enum::ids()](#enumids)
-    - [Enum::label()](#enumlabel)
-    - [Enum::labels()](#enumlabels)
-    - [Enum::metadata()](#enummetadata)
-    - [Enum::metadatum()](#enummetadatum)
+  - [Enum::attributes()](#enumattributes)
+  - [Enum::description()](#enumdescription)
+  - [Enum::descriptions()](#enumdescriptions)
+  - [Enum::id()](#enumid)
+  - [Enum::ids()](#enumids)
+  - [Enum::label()](#enumlabel)
+  - [Enum::labels()](#enumlabels)
+  - [Enum::metadata()](#enummetadata) **filterable**
+  - [Enum::metadatum()](#enummetadatum) **filterable**
 - [Enum Traits (BackedEnum)](#enum-traits-backedenum)
-    - [asSelectArray()](#asselectarray)
-    - [fromName()](#fromname)
-    - [name()](#name)
-    - [names()](#names)
-    - [toLabel()](#tolabel)
-    - [toLabels()](#tolabels)
-    - [tryFromName()](#tryfromname)
-    - [value()](#value)
-    - [values()](#values)
+  - [asSelectArray()](#asselectarray)
+  - [fromName()](#fromname)
+  - [name()](#name)
+  - [names()](#names)
+  - [toLabel()](#tolabel)
+  - [toLabels()](#tolabels)
+  - [tryFromName()](#tryfromname)
+  - [value()](#value)
+  - [values()](#values)
 - [Enum Traits (HasAttributes)](#enum-traits-hasattributes)
-    - [attributes()](#attributes)
-    - [description()](#description)
-    - [descriptions()](#descriptions)
-    - [id()](#id)
-    - [ids()](#ids)
-    - [label()](#label)
-    - [labels()](#labels)
-    - [metadata()](#metadata)
-    - [metadatum()](#metadatum)
+  - [attributes()](#attributes)
+  - [description()](#description)
+  - [descriptions()](#descriptions)
+  - [id()](#id)
+  - [ids()](#ids)
+  - [label()](#label)
+  - [labels()](#labels)
+  - [metadata()](#metadata) **filterable**
+  - [metadatum()](#metadatum) **filterable**
+  - [meta()](#meta) **Metadata property accessor**
 - [String Helper Macros](#string-helper-macros)
-    - [Str::splitConstantCase()](#strsplitconstantcase)
-    - [Str::splitEnumCase()](#strsplitenumcase)
+  - [Str::splitConstantCase()](#strsplitconstantcase)
+  - [Str::splitEnumCase()](#strsplitenumcase)
 
-
-## ExampleBackedEnum class
+## Attributes
 
 The **Laravel Enum** methods are designed for <a href="https://www.php.net/manual/en/language.enumerations.backed.php" target="_blank">PHP 8 Backed Enumeration</a> classes.
 
-**Laravel Enum** helper and trait methods extend an existing backed enum class for more versatile enum handling. Additionally, **Laravel Enum** offers a fluent way to add and manage <a href="https://www.php.net/manual/en/language.attributes.overview.php" target="_blank">PHP 8 Attributes</a> on backed enum cases. This package comes with four available attributes to readily assign to your enum cases: `Description`, `Id`, `Label`, and `Metadata`. The ExampleBackedEnum class below demonstrates how you can apply these attributes to you enums. You may pick and choose which attributes you wish to take advantage of.
+**Laravel Enum** helper and trait methods extend an existing backed enum class for more versatile enum handling. Additionally, **Laravel Enum** offers a fluent way to add and manage <a href="https://www.php.net/manual/en/language.attributes.overview.php" target="_blank">PHP 8 Attributes</a> on backed enum cases. This package comes with four available attributes to readily assign to your enum cases: **Description**, **Id**, **Label**, and **Metadata**. The example enum classes linked below demonstrate how you can apply these attributes to your enums. You may pick and choose which attributes you wish to take advantage of.
+
+- [BackedEnumShape.php](src/Enums/BackedEnumShape.php)
+- [BackedEnumStatus.php](src/Enums/BackedEnumStatus.php)
+
+To apply an attribute to an enum, be sure to import the `BackedEnum` and the `HasAttributes` traits and the attribute class needed.
 
 ```php
 use Iteks\Attributes\Description;
-use Iteks\Attributes\Id;
-use Iteks\Attributes\Label;
-use Iteks\Attributes\Metadata;
 use Iteks\Traits\BackedEnum;
 use Iteks\Traits\HasAttributes;
 
-enum ExampleBackedEnum: int
+enum BackedEnumShape: string
 {
     use BackedEnum;
     use HasAttributes;
 
-    #[Description('Active status indicating the resource is currently in use')]
-    #[Id(101)]
-    #[Label('Active')]
-    #[Metadata(['status_type' => 'positive', 'display_color' => 'green'])]
-    case CurrentlyActive = 1;
-
-    #[Description('Pending status indicating the resource is awaiting processing or approval')]
-    #[Id(102)]
-    #[Label('Pending')]
-    #[Metadata('{"status_type": "neutral", "display_color": "yellow"}')]
-    case PendingReview = 2;
-
-    #[Description('Temporarily suspended status indicating the resource is on hold')]
-    #[Id(103)]
-    #[Label('Suspended (!)')]
-    #[Metadata([])]
-    case TemporarilySuspended = 3;
+    #[Description('A circle is a perfectly round geometric figure, every point on the circle is equidistant from the center')]
+    case RoundCircle = 'circle';
 }
 ```
 
-[top](#usage)
-
-## Attributes
-
-The package provides four attributes to enhance your enum classes and cases:
+The package provides the following four attributes to enhance your enum classes and cases:
 
 ### Description Attribute
+
 Provides descriptive text for enum classes and cases.
 
 ```php
-#[Description('A collection of status codes')] // Class-level description
-enum Status: int
+enum BackedEnumShape: string
 {
-    #[Description('Operation completed successfully')] // Case-level description
-    case Success = 200;
+    #[Description('A circle is a perfectly round geometric figure, every point on the circle is equidistant from the center')]
+    case RoundCircle = 'circle';
 }
 ```
 
 ### Id Attribute
+
 Provides unique identifiers for enum cases.
 
 ```php
-enum Status: int
+enum BackedEnumShape: string
 {
     #[Id(1)]
-    case Draft = 0;
+    case RoundCircle = 'circle';
 }
 ```
 
 ### Label Attribute
+
 Provides human-readable labels for enum cases.
 
 ```php
-enum Status: int
+enum BackedEnumShape: string
 {
-    #[Label('In Progress')]
-    case Processing = 1;
+    #[Label('Round Circle')]
+    case RoundCircle = 'circle';
 }
 ```
 
 ### Metadata Attribute
-Provides additional metadata for enum classes and cases. Supports multiple metadata attributes and can be used on both the enum class and its cases.
+
+Provides additional metadata for enum classes and cases. Metadata can be specified as either an array or a JSON string (must use double quotes for valid JSON).
 
 ```php
-#[Metadata(['version' => '1.0'])] // Class-level metadata
-enum Status: int
+enum BackedEnumShape: string
 {
-    #[Metadata(['severity' => 'error'])] // Case-level metadata
-    case Error = 500;
+    #[Metadata(['color' => 'red', 'sides' => 0, 'type' => 'curved'])] // Metadata as array
+    case RoundCircle = 'circle';
+
+    #[Metadata('{"color": "blue", "sides": 4, "type": "polygon", "regular": true}')] // Metadata as JSON string
+    case BoxSquare = 'square';
 }
 ```
 
-### Attribute Capabilities Summary
-- **Description**: Class + Cases
-- **Id**: Cases Only
-- **Label**: Cases Only
-- **Metadata**: Class + Cases
+The metadata values can be accessed in three ways:
+
+1. Through the `meta()` accessor (recommended for property-like access)
+   - [meta()](#meta)
+2. Using the `metadata()` method with optional key filtering (recommended for case specific data)
+   - [Enum::metadata()](#enummetadata)
+   - [metadata()](#metadata)
+3. Using the `metadatum()` method with optional key filtering (recommended for all enum cases within the class)
+   - [Enum::metadatum()](#enummetadatum)
+   - [metadatum()](#metadatum)
+
+> **Note**: While Id and Label attributes technically support class-level usage, this is deprecated and will be removed in v2.0.0. Please use these attributes only on enum cases.
 
 [top](#usage)
 
 ## Enum Helpers (BackedEnum)
 
-First, import the helper class:
+The **Laravel Enum** package provides a set of helper methods through the `Enum` facade to work with backed enums. These methods are available for any enum that uses the `BackedEnum` trait.
+
+To use the Enum facade, start by importing the Enum helper into the file where your logic will be:
 
 ```php
-use Iteks\Support\Facades\Enum;
+use Iteks\Facades\Enum;
 ```
-
-_Note: This group of helpers **does NOT require any trait to be applied** to the target enum class. You may immediately use the the following methods:_
 
 ### Enum::asSelectArray()
 
-Get a backed enum class as an array to populate a select element. The array will consist of a `text` key column containing values of the case name in display format, and a `value` keys column containing values using the original simpler values.
+Convert an enum to a select array format, useful for form select elements.
+
+The array will consist of a `text` key column containing values of the case name in display format, and a `value` keys column containing values using the original simpler values.
 
 _Note: This method will first check for **Label** and **Id** attributes applied to the target enum class. If they are present, the method will prioritize those values. If not present, the method will return a mutated Headline value from the case name._
 
 ```php
-$selectArray = Enum::asSelectArray(ExampleBackedEnum::class);
+$options = Enum::asSelectArray(BackedEnumShape::class);
 ```
 
-```sh
-# Result:
-array:3 [▼
-  0 => array:2 [▼
-    "text" => "Active"
-    "value" => 101
-  ]
-  1 => array:2 [▼
-    "text" => "Pending"
-    "value" => 102
-  ]
-  2 => array:2 [▼
-    "text" => "Suspended (!)"
-    "value" => 103
-  ]
+```php
+// Result:
+[
+    ['text' => 'Round Circle', 'value' => 1],
+    ['text' => 'Perfect Square', 'value' => 2],
+    ['text' => 'Right-Triangle', 'value' => 3],
+    ['text' => '5 Point Star', 'value' => 4],
+    ['text' => 'Poly-Rectangle', 'value' => 5]
 ]
 ```
 
 ### Enum::toLabel()
 
-Create a label from the case name.
+Convert an enum case to its label representation.
 
 ```php
-$label = Enum::toLabel(ExampleBackedEnum::CurrentlyActive); // 'Currently Active'
+$label = Enum::toLabel(BackedEnumShape::RoundCircle);
+```
+
+```php
+// Result:
+'Round Circle'
 ```
 
 ### Enum::toLabels()
 
-Create and compile an array of labels from the case names.
+Convert multiple enum cases to their label representations.
 
 ```php
-$labels = Enum::toLabels(ExampleBackedEnum::class);
+$labels = Enum::toLabels();
 ```
 
-```sh
-# Result:
-array:3 [▼
-  0 => "Currently Active"
-  1 => "Pending Review"
-  2 => "Temporarily Suspended"
-]
+```php
+// Result:
+['Round Circle', 'Box Square', 'Right Triangle', 'Pointed Star', 'Polygon Rectangle']
 ```
 
 [top](#usage)
 
 ## Enum Helpers (HasAttributes)
 
-First, ensure that the target enum class has the `HasAttributes` trait applied, as shown in the [ExampleBackedEnum class](#examplebackedenum-class) above.
+The **Laravel Enum** package provides a rich set of helper methods through the `Enum` facade to work with enum attributes. These methods are available for any enum that uses both the `BackedEnum` and `HasAttributes` traits.
 
-Then, import the helper class:
+To use the Enum facade, start by importing the Enum helper into the file where your logic will be:
 
 ```php
-use Iteks\Support\Facades\Enum;
+use Iteks\Facades\Enum;
 ```
-
-You may then use the following methods:
 
 ### Enum::attributes()
 
-Accessing attributes.
-
-Retrieve all attributes for a given case.
+Get all attributes for an enum instance or all class instances.
 
 ```php
-$attributes = Enum::attributes(ExampleBackedEnum::CurrentlyActive);
+$attributes = Enum::attributes(BackedEnumShape::RoundCircle);
 ```
 
-```sh
-# Result:
-array:5 [▼
-  "simpleValue" => 1
-  "description" => "Active status indicating the resource is currently in use"
-  "id" => 101
-  "label" => "Active"
-  "metadata" => array:2 [▼
-    "status_type" => "positive"
-    "display_color" => "green"
-  ]
+```php
+// Result:
+[
+    'simpleValue' => 'circle',
+    'description' => 'A circle is a perfectly round geometric figure, every point on the circle is equidistant from the center',
+    'id' => 1,
+    'label' => 'Round Circle',
+    'metadata' => [
+        'color' => 'red',
+        'sides' => 0,
+        'type' => 'curved'
+    ]
 ]
 ```
 
-Retrieve a subset of the attributes for a given case.
+Filter attributes for the enum instance.
 
 ```php
-$attributes = Enum::attributes(ExampleBackedEnum::CurrentlyActive, ['id', 'label']);
+$attributes = Enum::attributes(BackedEnumShape::RoundCircle, ['id', 'label']);
 ```
 
-```sh
-# Result:
-array:2 [▼
-  "id" => 101
-  "label" => "Active"
+```php
+// Result:
+[
+    'id' => 1,
+    'label' => 'Round Circle'
 ]
 ```
 
-Retrieve all attributes for all cases.
+Get all attributes for each instance in the class.
 
 ```php
-$attributes = Enum::attributes(ExampleBackedEnum::class);
+$attributes = Enum::attributes(BackedEnumShape::class);
 ```
 
-```sh
-# Result:
-array:3 [▼
-  "CurrentlyActive" => array:5 [▼
-    "simpleValue" => 1
-    "description" => "Active status indicating the resource is currently in use"
-    "id" => 101
-    "label" => "Active"
-    "metadata" => array:2 [▶]
-  ]
-  "PendingReview" => array:5 [▼
-    "simpleValue" => 2
-    "description" => "Pending status indicating the resource is awaiting processing or approval"
-    "id" => 102
-    "label" => "Pending"
-    "metadata" => "{"status_type": "neutral", "display_color": "yellow"}"
-  ]
-  "TemporarilySuspended" => array:5 [▼
-    "simpleValue" => 3
-    "description" => "Temporarily suspended status indicating the resource is on hold"
-    "id" => 103
-    "label" => "Suspended (!)"
-    "metadata" => []
-  ]
+```php
+// Result:
+[
+    'RoundCircle' => [
+        'simpleValue' => 'circle',
+        'description' => 'A circle is a perfectly round geometric figure, every point on the circle is equidistant from the center',
+        'id' => 1,
+        'label' => 'Round Circle',
+        'metadata' => [,
+            'color' => 'red',
+            'sides' => 0,
+            'type' => 'curved'
+        ]
+    ],
+    'BoxSquare' => [
+        'simpleValue' => 'square',
+        'description' => 'A square is a regular quadrilateral',
+        'id' => 2,
+        'label' => 'Perfect Square',
+        'metadata' => [
+            'color' => 'blue',
+            'sides' => 4,
+            'type' => 'polygon',
+            'regular' => true
+        ]
+    ],
+    'RightTriangle' => [
+        'simpleValue' => 'triangle',
+        'description' => 'A triangle is a polygon with three edges and three vertices',
+        'id' => 3,
+        'label' => 'Right-Triangle',
+        'metadata' => [,
+            'color' => 'green',
+            'sides' => 3,
+            'type' => 'polygon'
+        ]
+    ],
+    ...
 ]
 ```
 
-Retrieve a subset of the attributes for all cases.
+Filter all attributes for each instance in the class by key(s).
 
 ```php
-$attributes = Enum::attributes(ExampleBackedEnum::class, ['description', 'metadata']);
+$attributes = Enum::attributes(BackedEnumShape::class, ['description', 'label']);
 ```
 
-```sh
-# Result:
-array:3 [▼
-  "CurrentlyActive" => array:2 [▼
-    "description" => "Active status indicating the resource is currently in use"
-    "metadata" => array:2 [▶]
-  ]
-  "PendingReview" => array:2 [▼
-    "description" => "Pending status indicating the resource is awaiting processing or approval"
-    "metadata" => "{"status_type": "neutral", "display_color": "yellow"}"
-  ]
-  "TemporarilySuspended" => array:2 [▼
-    "description" => "Temporarily suspended status indicating the resource is on hold"
-    "metadata" => []
-  ]
+```php
+// Result:
+[
+    'RoundCircle' => [
+        'description' => 'A circle is a perfectly round geometric figure, every point on the circle is equidistant from the center',
+        'label' => 'Round Circle'
+    ],
+    'BoxSquare' => [
+        'description' => 'A square is a regular quadrilateral',
+        'label' => 'Perfect Square'
+    ],
+    'RightTriangle' => [
+        'description' => 'A triangle is a polygon with three edges and three vertices',
+        'label' => 'Right-Triangle'
+    ],
+    ...
 ]
 ```
 
 ### Enum::description()
 
-Retrieve the description attribute.
+Get the description for an enum case.
 
 ```php
-$description = Enum::description(ExampleBackedEnum::CurrentlyActive);
+$description = Enum::description(BackedEnumShape::RoundCircle);
 ```
 
-```sh
-# Result:
-"Active status indicating the resource is currently in use"
+```php
+// Result:
+'A circle is a perfectly round geometric figure, every point on the circle is equidistant from the center'
 ```
 
 ### Enum::descriptions()
 
-Retrieve the description attribute for all cases.
+Get descriptions for multiple enum cases.
 
 ```php
-$descriptions = Enum::descriptions(ExampleBackedEnum::class);
+$descriptions = Enum::descriptions(BackedEnumShape::class);
 ```
 
-```sh
-# Result:
-array:3 [▼
-  0 => "Active status indicating the resource is currently in use"
-  1 => "Pending status indicating the resource is awaiting processing or approval"
-  2 => "Temporarily suspended status indicating the resource is on hold"
+```php
+// Result:
+[
+    'A circle is a perfectly round geometric figure, every point on the circle is equidistant from the center',
+    'A square is a regular quadrilateral',
+    'A triangle is a polygon with three edges and three vertices',
+    'A star is a self-intersecting, equilateral polygon',
+    'A rectangle is a quadrilateral with four right angles'
+]
+```
+
+Use the `keyBy` argument to get an associative array using the case name or simple value as the keys/indices.
+
+```php
+$descriptions = Enum::descriptions(BackedEnumShape::class, 'name');
+```
+
+```php
+// Result:
+[
+    'RoundCircle' => 'A circle is a perfectly round geometric figure, every point on the circle is equidistant from the center',
+    'BoxSquare' => 'A square is a regular quadrilateral',
+    ...
 ]
 ```
 
 ### Enum::id()
 
-Retrieve the id attribute.
+Get the ID attribute for an enum case.
 
 ```php
-$id = Enum::id(ExampleBackedEnum::CurrentlyActive); //101
+$id = Enum::id(BackedEnumShape::PointedStar);
+```
+
+```php
+// Result:
+4
 ```
 
 ### Enum::ids()
 
-Retrieve the id attribute for all cases.
+Get IDs for multiple enum cases.
 
 ```php
-$ids = Enum::ids(ExampleBackedEnum::class);
+$ids = Enum::ids(BackedEnumShape::class);
 ```
 
-```sh
-# Result:
-array:3 [▼
-  0 => 101
-  1 => 102
-  2 => 103
-]
+```php
+// Result:
+[1, 2, 3, 4, 5]
+```
+
+Use the `keyBy` argument to get an associative array using the case name or simple value as the keys/indices.
+
+```php
+$ids = Enum::ids(BackedEnumShape::class, 'value');
+```
+
+```php
+// Result:
+['circle' => 1, 'square' => 2, 'triangle' => 3, 'star' => 4, 'rectangle' => 5]
 ```
 
 ### Enum::label()
 
-Retrieve the label attribute.
+Get the label for an enum case.
 
 ```php
-$label = Enum::label(ExampleBackedEnum::TemporarilySuspended); // 'Suspended (!)'
+$label = Enum::label(BackedEnumShape::PolygonRectangle);
+```
+
+```php
+// Result:
+'Poly-Rectangle'
 ```
 
 ### Enum::labels()
 
-Retrieve the label attribute for all cases.
+Get labels for multiple enum cases.
 
 ```php
-$labels = Enum::labels(ExampleBackedEnum::class);
+$labels = Enum::labels(BackedEnumShape::class);
 ```
 
-```sh
-# Result:
-array:3 [▼
-  0 => "Active"
-  1 => "Pending"
-  2 => "Suspended (!)"
-]
+```php
+// Result:
+['Round Circle', 'Perfect Square', 'Right-Triangle', '5 Point Star', 'Poly-Rectangle']
 ```
 
 ### Enum::metadata()
 
-Retrieve the metadata attribute.
+Retrieve the metadata attribute or specific metadata values by key(s).
 
 ```php
-$metadata = Enum::metadata(ExampleBackedEnum::CurrentlyActive);
+$allMetadata = Enum::metadata(BackedEnumShape::BoxSquare);
 ```
 
-```sh
-# Result:
-array:2 [▼
-  "status_type" => "positive"
-  "display_color" => "green"
+```php
+// Result:
+[
+    'color' => 'blue',
+    'sides' => 4,
+    'type' => 'polygon',
+    'regular' => true
+]
+```
+
+Get specific metadata value.
+
+```php
+$specific = Enum::metadata(BackedEnumShape::BoxSquare, 'color');
+```
+
+```php
+// Result:
+'blue'
+```
+
+Filter metadata by specific keys.
+
+```php
+$filteredMetadata = Enum::metadata(BackedEnumShape::BoxSquare, ['color', 'type']);
+```
+
+```php
+// Result:
+[
+    'color' => 'blue',
+    'type' => 'polygon'
 ]
 ```
 
 ### Enum::metadatum()
 
-Retrieve the metadata attribute for all cases.
+Retrieve the metadata attribute for all cases, optionally filtered by key.
 
 ```php
-$metadatum = Enum::metadatum(ExampleBackedEnum::class);
+$allMetadatum = Enum::metadatum(BackedEnumShape::class);
 ```
 
-```sh
-# Result:
-array:3 [▼
-  0 => array:2 [▼
-    "status_type" => "positive"
-    "display_color" => "green"
-  ]
-  1 => "{"status_type": "neutral", "display_color": "yellow"}"
-  2 => []
+```php
+// Result:
+[
+    ['color' => 'red', 'sides' => 0, 'type' => 'curved'],
+    ['color' => 'blue', 'sides' => 4, 'type' => 'polygon', 'regular' => true],
+    ['color' => 'green', 'sides' => 3, 'type' => 'polygon'],
+    ['color' => 'yellow', 'points' => 5, 'type' => 'star', 'symmetrical' => true],
+    ['color' => 'purple', 'sides' => 4, 'type' => 'polygon', 'regular' => false]
+]
+```
+
+Get specific metadatum values for the class.
+
+```php
+$specific = Enum::metadatum(BackedEnumShape::class, 'color');
+```
+
+```php
+// Result:
+['red', 'blue', 'green', 'yellow', 'purple']
+```
+
+Use the `keyBy` argument to get an associative array using the case name or simple value as the keys/indices.
+
+```php
+$keyBy = Enum::metadatum(BackedEnumShape::class, 'color', 'value');
+```
+
+```php
+// Result:
+[
+    'circle' => 'red',
+    'square' => 'blue',
+    'triangle' => 'green',
+    'star' => 'yellow',
+    'rectangle' => 'purple'
+]
+```
+
+Filter metadatum by specific keys.
+
+```php
+$filteredMetadatum = Enum::metadatum(BackedEnumShape::class, ['color', 'sides']);
+```
+
+```php
+// Result:
+[
+    ['color' => 'red', 'sides' => 0],
+    ['color' => 'blue', 'sides' => 4],
+    ['color' => 'green', 'sides' => 3],
+    ['color' => 'yellow'],
+    ['color' => 'purple', 'sides' => 4]
 ]
 ```
 
@@ -452,142 +555,163 @@ array:3 [▼
 
 ## Enum Traits (BackedEnum)
 
-First, ensure that the target enum class has the `BackedEnum` trait applied, as shown in the [ExampleBackedEnum class](#examplebackedenum-class) above.
+The `BackedEnum` trait provides instance methods for working with backed enums. Apply this trait to your enum class to access these methods directly on enum instances.
 
-Then, you may then use the following methods:
+```php
+use Iteks\Traits\BackedEnum;
+
+enum BackedEnumShape: string
+{
+    use BackedEnum;
+    ...
+```
 
 ### asSelectArray()
 
-Get a backed enum class as an array to populate a select element. The array will consist of a `text` key column containing values of the case name in display format, and a `value` keys column containing values using the original simpler values.
-
-_Note: This method will first check for `Label` and `Id` attributes applied to the target enum class. If they are present, the method will prioritize those values. If not present, the method will return a mutated Headline value from the case name._
+Convert the enum to a select array format, useful for form select elements.
 
 ```php
-$selectArray = ExampleBackedEnum::asSelectArray();
+$options = BackedEnumShape::asSelectArray();
 ```
 
-```sh
-# Result:
-array:3 [▼
-  0 => array:2 [▼
-    "text" => "Active"
-    "value" => 101
-  ]
-  1 => array:2 [▼
-    "text" => "Pending"
-    "value" => 102
-  ]
-  2 => array:2 [▼
-    "text" => "Suspended (!)"
-    "value" => 103
-  ]
+```php
+// Result:
+[
+    ['text' => 'Round Circle', 'value' => 1],
+    ['text' => 'Perfect Square', 'value' => 2],
+    ['text' => 'Right-Triangle', 'value' => 3],
+    ['text' => '5 Point Star', 'value' => 4],
+    ['text' => 'Poly-Rectangle', 'value' => 5]
 ]
 ```
 
 ### fromName()
 
-Maps a scalar to an enum instance.
+Create an enum instance from a case name.
 
 ```php
-$enum = ExampleBackedEnum::fromName('CurrentlyActive');
+$enum = BackedEnumShape::fromName('RoundCircle');
 ```
 
-```sh
-# Result:
-App\Enums\ExampleBackedEnum { ▼
-  +name: "CurrentlyActive"
-  +value: 1
+```php
+// Result:
+// The enum instance of BackedEnumShape::RoundCircle
+{
+    +name: "RoundCircle"
+    +value: "circle"
 }
 ```
 
 ### name()
 
-Retrieve the case name for the given simpler value.
+Get the case name of an enum instance.
 
 ```php
-$caseName = ExampleBackedEnum::name(1); // 'CurrentlyActive'
+$name = BackedEnumShape::name('square');
+```
+
+```php
+// Result:
+'BoxSquare'
 ```
 
 ### names()
 
-Retrieve an array containing all of the case names.
+Get all case names from the enum.
 
 ```php
-$caseNames = ExampleBackedEnum::names();
+$names = BackedEnumShape::names();
 ```
 
-```sh
-# Result:
-array:3 [▼
-  0 => "CurrentlyActive"
-  1 => "PendingReview"
-  2 => "TemporarilySuspended"
+```php
+// Result:
+[
+    'RoundCircle',
+    'BoxSquare',
+    'RightTriangle',
+    'PointedStar',
+    'PolygonRectangle'
 ]
 ```
 
 ### toLabel()
 
-Create a label from the case name.
+Convert an enum instance to its label representation.
 
 ```php
-$label = ExampleBackedEnum::toLabel(1); // 'Currently Active'
+$label = BackedEnumShape::toLabel('triangle');
+```
+
+```php
+// Result:
+'Right-Triangle'
 ```
 
 ### toLabels()
 
-Create and compile an array of labels from the case names.
+Convert multiple enum instances to their label representations.
 
 ```php
-$labels = ExampleBackedEnum::toLabels();
+$labels = BackedEnumShape::toLabels();
 ```
 
-```sh
-# Result:
-array:3 [▼
-  0 => "Currently Active"
-  1 => "Pending Review"
-  2 => "Temporarily Suspended"
+```php
+// Result:
+[
+    'Round Circle',
+    'Box Square',
+    'Right Triangle',
+    'Pointed Star',
+    'Polygon Rectangle'
 ]
 ```
 
 ### tryFromName()
 
-Maps a scalar to an enum instance or null.
+Attempt to create an enum instance from a case name, returning null if the name doesn't exist.
 
 ```php
-$enum = ExampleBackedEnum::tryFromName('CurrentlyActive');
+$enum = BackedEnumShape::tryFromName('RoundCircle');
 ```
 
-```sh
-# Result:
-App\Enums\ExampleBackedEnum { ▼
-  +name: "CurrentlyActive"
-  +value: 1
+```php
+// Result:
+// The enum instance of BackedEnumShape::RoundCircle
+{
+    +name: "RoundCircle"
+    +value: "circle"
 }
 ```
 
 ### value()
 
-Retrieve the simpler value for the given case name.
+Get the backed value of an enum instance.
 
 ```php
-$simplerValue = ExampleBackedEnum::value('CurrentlyActive'); // 1
+$value = BackedEnumShape::value('RoundCircle');
+```
+
+```php
+// Result:
+'circle'
 ```
 
 ### values()
 
-Retrieve an array containing all of the simpler values.
+Get all backed values from the enum.
 
 ```php
-$simplerValues = ExampleBackedEnum::values();
+$values = BackedEnumShape::values();
 ```
 
-```sh
-# Result:
-array:3 [▼
-  0 => 1
-  1 => 2
-  2 => 3
+```php
+// Result:
+[
+    'circle',
+    'square',
+    'triangle',
+    'star',
+    'rectangle'
 ]
 ```
 
@@ -595,245 +719,396 @@ array:3 [▼
 
 ## Enum Traits (HasAttributes)
 
-First, ensure that the target enum class has the `HasAttributes` trait applied, as shown in the [ExampleBackedEnum class](#examplebackedenum-class) above.
+The `HasAttributes` trait provides instance methods for working with enum attributes. Apply this trait along with `BackedEnum` to access these methods directly on enum instances.
 
-Then, you may then use the following methods:
+```php
+use Iteks\Traits\BackedEnum;
+use Iteks\Traits\HasAttributes;
+
+enum BackedEnumShape: string
+{
+    use BackedEnum;
+    use HasAttributes;
+    ...
+```
 
 ### attributes()
 
-Retrieve the attributes for a given case.
+Get all attributes for an enum instance or all class instances.
 
 ```php
-$attributes = ExampleBackedEnum::attributes('CurrentlyActive');
+$attributes = BackedEnumShape::attributes('RoundCircle');
 ```
-
-```sh
-# Result:
-array:5 [▼
-  "simpleValue" => 1
-  "description" => "Active status indicating the resource is currently in use"
-  "id" => 101
-  "label" => "Active"
-  "metadata" => array:2 [▼
-    "status_type" => "positive"
-    "display_color" => "green"
-  ]
-]
-```
-
-Retrieve a subset of the attributes for a given case.
 
 ```php
-$attributes = ExampleBackedEnum::attributes('CurrentlyActive', ['id', 'label']);
-```
-
-```sh
-# Result:
-array:2 [▼
-  "id" => 101
-  "label" => "Active"
-]
-```
-
-Retrieve the attributes for all cases.
-
-```php
-$attributes = ExampleBackedEnum::attributes();
-```
-
-```sh
-# Result:
-array:3 [▼
-  "CurrentlyActive" => array:5 [▼
-    "simpleValue" => 1
-    "description" => "Active status indicating the resource is currently in use"
-    "id" => 101
-    "label" => "Active"
-    "metadata" => array:2 [▼
-      "status_type" => "positive"
-      "display_color" => "green"
+// Result:
+[
+    'simpleValue' => 'circle',
+    'description' => 'A circle is a perfectly round geometric figure, every point on the circle is equidistant from the center',
+    'id' => 1,
+    'label' => 'Round Circle',
+    'metadata' => [
+        'color' => 'red',
+        'sides' => 0,
+        'type' => 'curved'
     ]
-  ]
-  "PendingReview" => array:5 [▼
-    "simpleValue" => 2
-    "description" => "Pending status indicating the resource is awaiting processing or approval"
-    "id" => 102
-    "label" => "Pending"
-    "metadata" => "{"status_type": "neutral", "display_color": "yellow"}"
-  ]
-  "TemporarilySuspended" => array:5 [▼
-    "simpleValue" => 3
-    "description" => "Temporarily suspended status indicating the resource is on hold"
-    "id" => 103
-    "label" => "Suspended (!)"
-    "metadata" => []
-  ]
 ]
 ```
 
-Retrieve a subset of the attributes for all cases/
+Filter attributes for the enum instance.
 
 ```php
-$attributes = ExampleBackedEnum::attributes(null, ['description', 'metadata']);
+$attributes = BackedEnumShape::attributes('RoundCircle', ['id', 'label']);
+
+// Result:
+[
+    'id' => 1,
+    'label' => 'Round Circle'
+]
 ```
 
-```sh
-# Result:
-array:3 [▼
-  "CurrentlyActive" => array:2 [▼
-    "description" => "Active status indicating the resource is currently in use"
-    "metadata" => array:2 [▼
-      "status_type" => "positive"
-      "display_color" => "green"
-    ]
-  ]
-  "PendingReview" => array:2 [▼
-    "description" => "Pending status indicating the resource is awaiting processing or approval"
-    "metadata" => "{"status_type": "neutral", "display_color": "yellow"}"
-  ]
-  "TemporarilySuspended" => array:2 [▼
-    "description" => "Temporarily suspended status indicating the resource is on hold"
-    "metadata" => []
-  ]
+Get all attributes for each instance in the class.
+
+```php
+$attributes = BackedEnumShape::attributes();
+```
+
+```php
+// Result:
+[
+    'RoundCircle' => [
+        'simpleValue' => 'circle',
+        'description' => 'A circle is a perfectly round geometric figure, every point on the circle is equidistant from the center',
+        'id' => 1,
+        'label' => 'Round Circle',
+        'metadata' => [,
+            'color' => 'red',
+            'sides' => 0,
+            'type' => 'curved'
+        ]
+    ],
+    'BoxSquare' => [
+        'simpleValue' => 'square',
+        'description' => 'A square is a regular quadrilateral',
+        'id' => 2,
+        'label' => 'Perfect Square',
+        'metadata' => [
+            'color' => 'blue',
+            'sides' => 4,
+            'type' => 'polygon',
+            'regular' => true
+        ]
+    ],
+    'RightTriangle' => [
+        'simpleValue' => 'triangle',
+        'description' => 'A triangle is a polygon with three edges and three vertices',
+        'id' => 3,
+        'label' => 'Right-Triangle',
+        'metadata' => [,
+            'color' => 'green',
+            'sides' => 3,
+            'type' => 'polygon'
+        ]
+    ],
+    ...
+]
+```
+
+Filter all attributes for each instance in the class by key(s).
+
+```php
+$attributes = BackedEnumShape::attributes(['description', 'label']);
+```
+
+```php
+// Result:
+[
+    'RoundCircle' => [
+        'description' => 'A circle is a perfectly round geometric figure, every point on the circle is equidistant from the center',
+        'label' => 'Round Circle'
+    ],
+    'BoxSquare' => [
+        'description' => 'A square is a regular quadrilateral',
+        'label' => 'Perfect Square'
+    ],
+    'RightTriangle' => [
+        'description' => 'A triangle is a polygon with three edges and three vertices',
+        'label' => 'Right-Triangle'
+    ],
+    ...
 ]
 ```
 
 ### description()
 
-Retrieve the description attribute.
+Get the description(s) for an enum instance or class.
 
 ```php
-$description = ExampleBackedEnum::description('CurrentlyActive');
+$description = BackedEnumShape::description('RoundCircle');
 ```
 
-```sh
-# Result:
-"Active status indicating the resource is currently in use"
+```php
+// Result:
+'A square is a regular quadrilateral, all sides have equal length and all angles are 90 degrees'
 ```
 
 ### descriptions()
 
-Retrieve the description attribute for all cases.
+Get descriptions for all enum cases.
 
 ```php
-$descriptions = ExampleBackedEnum::descriptions();
+$descriptions = BackedEnumShape::descriptions();
 ```
 
-```sh
-# Result:
-array:3 [▼
-  0 => "Active status indicating the resource is currently in use"
-  1 => "Pending status indicating the resource is awaiting processing or approval"
-  2 => "Temporarily suspended status indicating the resource is on hold"
+```php
+// Result:
+[
+    'A circle is a perfectly round geometric figure, every point on the circle is equidistant from the center',
+    'A square is a regular quadrilateral, all sides have equal length and all angles are 90 degrees',
+    'A triangle is a polygon with three edges and three vertices',
+    'A star is a self-intersecting, equilateral polygon',
+    'A rectangle is a quadrilateral with four right angles'
 ]
+```
+
+Use the `keyBy` argument to get an associative array using the case name or simple value as the keys/indices.
+
+```php
+$descriptions = BackedEnumShape::descriptions('name');
+
+// Result:
+[
+    'RoundCircle' => 'A circle is a perfectly round geometric figure, every point on the circle is equidistant from the center',
+    'BoxSquare' => 'A square is a regular quadrilateral',
+    ...
+]
+
 ```
 
 ### id()
 
-Retrieve the id attribute.
+Get the ID attribute for an enum instance.
 
 ```php
-$id = ExampleBackedEnum::id('CurrentlyActive'); // 101
+$id = BackedEnumShape::id('PointedStar');
+```
+
+```php
+// Result:
+4
 ```
 
 ### ids()
 
-Retrieve the id attribute for all cases.
+Get IDs for all enum cases.
 
 ```php
-$ids = ExampleBackedEnum::ids();
+$ids = BackedEnumShape::ids();
 ```
 
-```sh
-# Result:
-array:3 [▼
-  0 => 101
-  1 => 102
-  2 => 103
-]
+```php
+// Result:
+[1, 2, 3, 4, 5]
+```
+
+Use the `keyBy` argument to get an associative array using the case name or simple value as the keys/indices.
+
+```php
+$ids = BackedEnumShape::ids('value');
+```
+
+```php
+// Result:
+['circle' => 1, 'square' => 2, 'triangle' => 3, 'star' => 4, 'rectangle' => 5]
 ```
 
 ### label()
 
-Retrieve the label attribute.
+Get the label for an enum instance.
 
 ```php
-$label = ExampleBackedEnum::label('CurrentlyActive'); // 'Active'
+$label = BackedEnumShape::PolygonRectangle->label();
+```
+
+```php
+// Result:
+'Poly-Rectangle'
 ```
 
 ### labels()
 
-Retrieve the label attribute for all cases.
+Get labels for all enum cases.
 
 ```php
-$labels = ExampleBackedEnum::labels();
+$labels = BackedEnumShape::labels();
 ```
 
-```sh
-# Result:
-array:3 [▼
-  0 => "Active"
-  1 => "Pending"
-  2 => "Suspended (!)"
-]
+```php
+// Result:
+['Round Circle', 'Perfect Square', 'Right-Triangle', '5 Point Star', 'Poly-Rectangle']
 ```
 
 ### metadata()
 
-Retrieve the metadata attribute.
+Retrieve the metadata attribute or specific metadata values by key(s).
 
 ```php
-$metadata = ExampleBackedEnum::metadata('CurrentlyActive');
+$allMetadata = BackedEnumShape::metadata('BoxSquare');
 ```
 
-```sh
-# Result:
-array:2 [▼
-  "status_type" => "positive"
-  "display_color" => "green"
+```php
+// Result:
+[
+    'color' => 'blue',
+    'sides' => 4,
+    'type' => 'polygon',
+    'regular' => true
 ]
+```
+
+Get specific metadata value.
+
+```php
+$specific = BackedEnumShape::metadata('BoxSquare', 'color');
+```
+
+```php
+// Result:
+'blue'
+```
+
+Filter metadata by specific keys.
+
+```php
+$filteredMetadata = BackedEnumShape::metadata('BoxSquare', ['color', 'type']);
+```
+
+```php
+// Result:
+[
+    'color' => 'blue',
+    'type' => 'polygon'
+]
+
 ```
 
 ### metadatum()
 
-Retrieve the metadata attribute for all cases.
+Retrieve the metadata attribute for all cases, optionally filtered by key.
 
 ```php
-$metadatum = ExampleBackedEnum::metadatum();
+$allMetadatum = BackedEnumShape::metadatum();
 ```
 
-```sh
-# Result:
-array:3 [▼
-  0 => array:2 [▼
-    "status_type" => "positive"
-    "display_color" => "green"
-  ]
-  1 => "{"status_type": "neutral", "display_color": "yellow"}"
-  2 => []
+```php
+// Result:
+[
+    ['color' => 'red', 'sides' => 0, 'type' => 'curved'],
+    ['color' => 'blue', 'sides' => 4, 'type' => 'polygon', 'regular' => true],
+    ['color' => 'green', 'sides' => 3, 'type' => 'polygon'],
+    ['color' => 'yellow', 'points' => 5, 'type' => 'star', 'symmetrical' => true],
+    ['color' => 'purple', 'sides' => 4, 'type' => 'polygon', 'regular' => false]
 ]
+```
+
+Get specific metadatum values only for the class.
+
+```php
+$specific = BackedEnumShape::metadatum('color');
+```
+
+```php
+// Result:
+['red', 'blue', 'green', 'yellow', 'purple']
+```
+
+Use the `keyBy` argument to get an associative array using the case name or simple value as the keys/indices.
+
+```php
+$keyBy = BackedEnumShape::metadatum('color', 'value');
+```
+
+```php
+// Result:
+[
+    'circle' => 'red',
+    'square' => 'blue',
+    'triangle' => 'green',
+    'star' => 'yellow',
+    'rectangle' => 'purple'
+]
+```
+
+Filter metadatum by specific keys.
+
+```php
+$filteredMetadatum = BackedEnumShape::metadatum(['color', 'sides']);
+
+// Result:
+[
+    ['color' => 'red', 'sides' => 0],
+    ['color' => 'blue', 'sides' => 4],
+    ['color' => 'green', 'sides' => 3],
+    ['color' => 'yellow'],
+    ['color' => 'purple', 'sides' => 4]
+]
+```
+
+### meta()
+
+Access metadata values using property-like syntax. This is the recommended way to access individual metadata values.
+
+```php
+// Access metadata values directly
+$color = BackedEnumShape::RoundCircle->meta()->color; // 'red'
+$sides = BackedEnumShape::RoundCircle->meta()->sides; // 0
+$type = BackedEnumShape::RoundCircle->meta()->type; // 'curved'
+
+// Safely access non-existent properties
+$unknown = BackedEnumShape::RoundCircle->meta()->nonexistent; // null
+
+// Access nested JSON string metadata
+$regular = BackedEnumShape::BoxSquare->meta()->regular; // true
 ```
 
 [top](#usage)
 
 ## String Helper Macros
 
-These helperas are booted when installing the package and are immediately available for use.
+The **Laravel Enum** package extends Laravel's `Str` facade with additional helper methods for working with enum case names.
 
 ### Str::splitConstantCase()
 
-Splits a "CONSTANT_CASE" string into words separated by whitespace.
+Split a constant case string into its constituent words. This is useful when working with enum case names that follow constant case naming conventions (a.k.a. Snake case).
 
 ```php
-$string = Str::splitConstantCase('CONSTANT_CASE'); // 'CONSTANT CASE'
+use Illuminate\Support\Str;
+
+// Split a Snake case (ALL CAPS) string
+$words = Str::splitConstantCase('CONSTANT_CASE'); // 'CONSTANT CASE'
+// Split a Snake case (Title) string
+$words = Str::splitConstantCase('Constant_Case'); // 'Constant Case'
+// Split a Snake case (all lowercase) string
+$words = Str::splitConstantCase('constant_case'); // 'constant case'
 ```
 
 ### Str::splitEnumCase()
 
-Splits a "EnumCase" string into words separated by whitespace.
+Split an enum case name into its constituent words. This is useful when working with enum case names that follow enum case (a.k.a. Pascal case) naming conventions. Also, handles Camel case strings.
 
 ```php
-$string = Str::splitEnumCase('EnumCase'); // 'Enum Case'
+use Illuminate\Support\Str;
+
+// Split an Pascal case string
+$words = Str::splitEnumCase('EnumCase'); // 'Enum Case'
+// Split an Camel case string
+$words = Str::splitEnumCase('enumCase'); // 'enum Case'
 ```
+
+These string helper macros are particularly useful when you need to:
+
+- Generate human-readable labels from enum case names
+- Parse enum case names for display or processing
+- Create consistent formatting across your application
 
 [top](#usage)
